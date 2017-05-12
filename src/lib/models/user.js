@@ -42,12 +42,14 @@ const userSchema = new mongoose.Schema({
     required: [true, "A password is required!"],
   },
   tenant: { type: "ObjectId", ref: "Tenant" },
-  timezone: {
+  savedTimezone: {
     type: String,
     trim: true,
     enum: timezoneEnum,
     default: "Etc/UTC",
   },
+  lastProblemTS: Date,
+  voiceNavigation: { type: Boolean, default: true },
 }, {
   timestamps: true,
 });
@@ -55,6 +57,18 @@ const userSchema = new mongoose.Schema({
 class UserClass {
   async checkPass(password) {
     return bcrypt.compare(password, this.password);
+  }
+
+  get timezone() {
+    return this.__tempTimezone || this.savedTimezone;
+  }
+
+  set timezone(tz) {
+    this.savedTimezone = tz;
+  }
+
+  set tempTimezone(tz) {
+    this.__tempTimezone = tz;
   }
 
   get dynatraceUrl() {
@@ -69,6 +83,11 @@ class UserClass {
     const active = this.tenant.access.active % this.tenant.access.tokens.length;
     return this.tenant.access.tokens.slice(active)
       .concat(this.tenant.access.tokens.slice(0, active));
+  }
+
+  updateProblemTS() {
+    this.lastProblemTS = new Date();
+    return this.save();
   }
 }
 
