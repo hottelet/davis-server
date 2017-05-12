@@ -6,7 +6,7 @@ const logger = require("../../../core/logger");
 class Yes extends Plugin {
   constructor() {
     super(...arguments);
-    this.name = "yes";
+    this.name = "davisChoiceYes";
   }
 
   async ask(req) {

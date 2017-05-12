@@ -20,7 +20,7 @@ const choices = {
 class NumericChoice extends Plugin {
   constructor() {
     super(...arguments);
-    this.name = "numericChoice";
+    this.name = "davisChoiceNumeric";
   }
 
   async ask(req) {

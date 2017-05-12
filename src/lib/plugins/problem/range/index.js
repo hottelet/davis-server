@@ -15,7 +15,7 @@ const sb = require("../../../util/builder").sb;
 class RangeProblem extends Plugin {
   constructor() {
     super(...arguments);
-    this.name = "rangeProblem";
+    this.name = "davisProblemRange";
   }
 
   /**
@@ -199,11 +199,11 @@ function manyProblems(user, range, problems) {
       .s("problems occurred. Would you like to see a listing of these issues?"),
     targets: {
       yes: {
-        intent: "showPage",
+        intent: "davisPagerShow",
       },
     },
     paging: {
-      items: problems.map(p => ({ id: p.id, source: "detailProblem", target: "detailProblem" })),
+      items: problems.map(p => ({ id: p.id, source: "davisProblemDetail", target: "davisProblemDetail" })),
     },
   };
 }
@@ -215,11 +215,11 @@ function appManyProblems(user, range, problems, entity) {
       .s("problems affected").e(entity.entityId, entity.name).p.s("Would you like to see a listing of these issues?"),
     targets: {
       yes: {
-        intent: "showPage",
+        intent: "davisPagerShow",
       },
     },
     paging: {
-      items: problems.map(p => ({ id: p.id, source: "detailProblem", target: "detailProblem" })),
+      items: problems.map(p => ({ id: p.id, source: "davisProblemDetail", target: "davisProblemDetail" })),
     },
   };
 }

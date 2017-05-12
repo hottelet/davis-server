@@ -19,7 +19,7 @@ class OpenProblem extends Plugin {
    */
   constructor() {
     super(...arguments);
-    this.name = "openProblem";
+    this.name = "davisProblemOpen";
   }
 
   /**

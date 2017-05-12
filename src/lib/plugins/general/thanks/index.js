@@ -7,7 +7,7 @@ const { sb } = require("../../../util/builder");
 class Thanks extends Plugin {
   constructor() {
     super(...arguments);
-    this.name = "thanks";
+    this.name = "davisGeneralThanks";
   }
 
   async ask(req) {

@@ -8,7 +8,7 @@ const Linker = require("../../../util/linker");
 class DetailProblem extends Plugin {
   constructor() {
     super(...arguments);
-    this.name = "detailProblem";
+    this.name = "davisProblemDetail";
   }
 
   /**
