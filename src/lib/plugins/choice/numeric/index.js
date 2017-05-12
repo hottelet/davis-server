@@ -20,7 +20,7 @@ const choices = {
 class NumericChoice extends Plugin {
   constructor() {
     super(...arguments);
-    this.name = "numericChoice";
+    this.name = "davisChoiceNumeric";
   }
 
   async ask(req) {
@@ -32,7 +32,7 @@ class NumericChoice extends Plugin {
         text: "I'm sorry, but I'm not sure what you mean.",
       };
     }
-    return this.davis.plugins.pageRoute._choose(req, idx);
+    return this.davis.plugins.davisPagerRoute._choose(req, idx);
   }
 }
 

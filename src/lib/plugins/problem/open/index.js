@@ -3,6 +3,7 @@
 const Dynatrace = require("../../../core/dynatrace");
 const Plugin = require("../../../core/plugin");
 const sb = require("../../../util/builder").sb;
+const Util = require("../../../util");
 
 /**
  * Plugin for asking about open issues
@@ -19,7 +20,7 @@ class OpenProblem extends Plugin {
    */
   constructor() {
     super(...arguments);
-    this.name = "openProblem";
+    this.name = "davisProblemOpen";
   }
 
   /**
@@ -41,7 +42,7 @@ class OpenProblem extends Plugin {
       return { text: "Nice! It appears your system has no open problems." };
     }
 
-    const stats = Dynatrace.problemStats(problems);
+    const stats = Util.Dynatrace.problemStats(problems);
 
     const numApps = Object.keys(stats.affectedApps).length;
 

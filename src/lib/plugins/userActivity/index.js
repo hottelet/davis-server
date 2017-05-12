@@ -18,7 +18,7 @@ class UserActivity extends Plugin {
    */
   constructor() {
     super(...arguments);
-    this.name = "userActivity";
+    this.name = "davisActivityUnimplemented";
   }
 
   /**

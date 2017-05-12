@@ -3,17 +3,17 @@
 /* eslint-disable */
 
 module.exports = [
-  require("./problems/dateProblem"),
-  require("./problems/openProblem"),
-  require("./problems/rangeProblem"),
-  require("./problems/detailProblem"),
+  require("./problem/date"),
+  require("./problem/open"),
+  require("./problem/range"),
+  require("./problem/detail"),
 
-  require("./choice/numericChoice"),
+  require("./choice/numeric"),
   require("./choice/yes"),
   require("./choice/no"),
 
-  require("./pager/showPage"),
-  require("./pager/pageRoute"),
+  require("./pager/show"),
+  require("./pager/route"),
   require("./pager/next"),
   require("./pager/previous"),
 

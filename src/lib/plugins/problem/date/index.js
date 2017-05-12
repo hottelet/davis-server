@@ -8,7 +8,7 @@ const Util = require("../../../util");
 class DateProblem extends Plugin {
   constructor() {
     super(...arguments);
-    this.name = "dateProblem";
+    this.name = "davisProblemDate";
   }
 
   parseSlots(user, slots, raw) {
@@ -57,7 +57,7 @@ async function response(req) {
 async function appResponse(req, entity) {
   const timeRange = Util.Date.dateParser(req.slots.date, req.user);
   const unfiltered = await Dynatrace.problemFeed(req.user, { timeRange });
-  const problems = Dynatrace.filterProblemFeed(unfiltered, { entityId: entity.entityId });
+  const problems = Util.Dynatrace.filterProblemFeed(unfiltered, { entityId: entity.entityId });
   return (problems.length === 0) ? appNoProblem(req, entity) :
     (problems.length === 1) ? appOneProblem(req, problems[0], entity) :
       appManyProblems(req, problems, entity);
@@ -75,7 +75,7 @@ async function appNoProblem(req, entity) {
 }
 
 async function oneProblem(req, problem) {
-  const detail = await req.davis.plugins.detailProblem._yes(req, problem.id);
+  const detail = await req.davis.plugins.davisProblemDetail._yes(req, problem.id);
   return {
     text: sb(req.user).s("Only one problem occurred").date(req.slots.date).p.s(detail.text),
     show: {
@@ -86,7 +86,7 @@ async function oneProblem(req, problem) {
 }
 
 async function appOneProblem(req, problem, entity) {
-  const detail = await req.davis.plugins.detailProblem._yes(req, problem.id);
+  const detail = await req.davis.plugins.davisProblemDetail._yes(req, problem.id);
   return {
     text: sb(req.user).s("Only one problem occurred").date(req.slots.date).s("that affected")
       .e(entity.entityId, entity.name).p.s(detail.text),
@@ -105,11 +105,11 @@ async function manyProblems(req, problems) {
       .s("problems occurred. Would you like to see a listing of these issues?"),
     targets: {
       yes: {
-        intent: "showPage",
+        intent: "davisPagerShow",
       },
     },
     paging: {
-      items: problems.map(p => ({ id: p.id, source: "detailProblem", target: "detailProblem" })),
+      items: problems.map(p => ({ id: p.id, source: "davisProblemDetail", target: "davisProblemDetail" })),
     },
   };
 }
@@ -121,11 +121,11 @@ async function appManyProblems(req, problems, entity) {
       .s("problems affected").e(entity.entityId, entity.name).p.s("Would you like to see a listing of these issues?"),
     targets: {
       yes: {
-        intent: "showPage",
+        intent: "davisPagerShow",
       },
     },
     paging: {
-      items: problems.map(p => ({ id: p.id, source: "detailProblem", target: "detailProblem" })),
+      items: problems.map(p => ({ id: p.id, source: "davisProblemDetail", target: "davisProblemDetail" })),
     },
   };
 }

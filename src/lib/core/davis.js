@@ -56,14 +56,14 @@ class Davis {
    */
   async ask(req) {
     const lexResponse = (yes.test(req.raw)) ? ({
-      intentName: "yes",
+      intentName: "davisChoiceYes",
       slots: {},
       message: null,
       dialogState: "ReadyForFulfillment",
       slotToElicit: null,
     }) :
       (no.test(req.raw)) ? ({
-        intentName: "no",
+        intentName: "davisChoiceNo",
         slots: {},
         message: null,
         dialogState: "ReadyForFulfillment",

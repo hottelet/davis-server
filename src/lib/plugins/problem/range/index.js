@@ -3,6 +3,7 @@
 const Dynatrace = require("../../../core/dynatrace");
 const Plugin = require("../../../core/plugin");
 const sb = require("../../../util/builder").sb;
+const Util = require("../../../util");
 
 /**
  * Plugin for asking about a recent range
@@ -15,7 +16,7 @@ const sb = require("../../../util/builder").sb;
 class RangeProblem extends Plugin {
   constructor() {
     super(...arguments);
-    this.name = "rangeProblem";
+    this.name = "davisProblemRange";
   }
 
   /**
@@ -49,7 +50,7 @@ async function appResponse(req) {
   if (entity) {
     let problems = await Dynatrace.problemFeed(req.user, { relativeTime: range });
 
-    problems = Dynatrace.filterProblemFeed(problems, entity);
+    problems = Util.Dynatrace.filterProblemFeed(problems, entity);
 
     return (problems.length === 0) ? appNoProblems(req.user, range, entity) :
       (problems.length === 1) ? appOneProblem(req.user, range, problems[0], entity) :
@@ -104,7 +105,7 @@ function appOneProblem(user, range, problem, entity) {
  * @returns
  */
 function openProblem(user, range, problem) {
-  const stats = Dynatrace.problemStats([problem]);
+  const stats = Util.Dynatrace.problemStats([problem]);
   const out = sb(user)
     .s("In the last").d(range).c.s("the only problem was a").h(problem.rankedImpacts[0].eventType)
     .s("that started at").ts(problem.startTime).c.s("and is still ongoing.");
@@ -120,7 +121,7 @@ function openProblem(user, range, problem) {
 }
 
 function appOpenProblem(user, range, problem, entity) {
-  const stats = Dynatrace.problemStats([problem]);
+  const stats = Util.Dynatrace.problemStats([problem]);
   const out = sb(user)
     .s("In the last").d(range).c.s("the only problem that affected").e(entity.entityId, entity.name).s("was a").h(problem.rankedImpacts[0].eventType)
     .s("that started at").ts(problem.startTime).c.s("and is still ongoing.");
@@ -143,7 +144,7 @@ function appOpenProblem(user, range, problem, entity) {
  * @returns
  */
 function closedProblem(user, range, problem) {
-  const stats = Dynatrace.problemStats([problem]);
+  const stats = Util.Dynatrace.problemStats([problem]);
 
   // Always starts the same way
   const out = sb(user)
@@ -168,7 +169,7 @@ function closedProblem(user, range, problem) {
 }
 
 function appClosedProblem(user, range, problem, entity) {
-  const stats = Dynatrace.problemStats([problem]);
+  const stats = Util.Dynatrace.problemStats([problem]);
 
   // Always starts the same way
   const out = sb(user)
@@ -199,11 +200,11 @@ function manyProblems(user, range, problems) {
       .s("problems occurred. Would you like to see a listing of these issues?"),
     targets: {
       yes: {
-        intent: "showPage",
+        intent: "davisPagerShow",
       },
     },
     paging: {
-      items: problems.map(p => ({ id: p.id, source: "detailProblem", target: "detailProblem" })),
+      items: problems.map(p => ({ id: p.id, source: "davisProblemDetail", target: "davisProblemDetail" })),
     },
   };
 }
@@ -215,11 +216,11 @@ function appManyProblems(user, range, problems, entity) {
       .s("problems affected").e(entity.entityId, entity.name).p.s("Would you like to see a listing of these issues?"),
     targets: {
       yes: {
-        intent: "showPage",
+        intent: "davisPagerShow",
       },
     },
     paging: {
-      items: problems.map(p => ({ id: p.id, source: "detailProblem", target: "detailProblem" })),
+      items: problems.map(p => ({ id: p.id, source: "davisProblemDetail", target: "davisProblemDetail" })),
     },
   };
 }

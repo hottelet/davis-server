@@ -3,9 +3,11 @@
 const DDate = require("./date");
 const Linker = require("./linker");
 const SlotParsers = require("./slot-parsers");
+const Dynatrace = require("./dynatrace");
 
 module.exports.Date = DDate;
 module.exports.SlotParsers = SlotParsers;
+module.exports.Dynatrace = Dynatrace;
 
 module.exports.timer = () => {
   const start = process.hrtime();

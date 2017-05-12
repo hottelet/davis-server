@@ -5,7 +5,7 @@ const Plugin = require("../../../core/plugin");
 class PageRoute extends Plugin {
   constructor() {
     super(...arguments);
-    this.name = "pageRoute";
+    this.name = "davisPagerRoute";
   }
 
   async yes(req, value) {

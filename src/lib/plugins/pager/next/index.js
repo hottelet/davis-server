@@ -5,7 +5,7 @@ const Plugin = require("../../../core/plugin");
 class Next extends Plugin {
   constructor() {
     super(...arguments);
-    this.name = "next";
+    this.name = "davisPagerNext";
   }
 
   async ask(req) {
@@ -27,7 +27,7 @@ class Next extends Plugin {
       return { text: "You are already on the last page" };
     }
     req.context.set("paging.page", paging.page + 1);
-    return this.davis.plugins.showPage.run(req);
+    return this.davis.plugins.davisPagerShow.run(req);
   }
 
   async nextItem(req) {

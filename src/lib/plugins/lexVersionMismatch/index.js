@@ -18,7 +18,7 @@ class LexVersionMismatch extends Plugin {
    */
   constructor() {
     super(...arguments);
-    this.name = "lexVersionMismatch";
+    this.name = "davisLexVersionMismatch";
   }
 
   /**

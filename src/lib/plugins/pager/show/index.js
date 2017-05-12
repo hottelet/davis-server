@@ -6,7 +6,7 @@ const sb = require("../../../util/builder").sb;
 class ShowPage extends Plugin {
   constructor() {
     super(...arguments);
-    this.name = "showPage";
+    this.name = "davisPagerShow";
   }
 
   async ask(req) {
@@ -36,7 +36,7 @@ class ShowPage extends Plugin {
       text,
       targets: {
         yes: {
-          intent: "pageRoute",
+          intent: "davisPagerRoute",
           value: item,
         },
       },
