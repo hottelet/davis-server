@@ -36,7 +36,7 @@ class ShowPage extends Plugin {
       text,
       targets: {
         yes: {
-          intent: "pageRoute",
+          intent: "davisPagerRoute",
           value: item,
         },
       },
