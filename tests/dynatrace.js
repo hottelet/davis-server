@@ -2,6 +2,9 @@ const expect = require("chai").expect;
 const Util = require("../src/lib/util");
 const { problems, stats } = require("./data/problemFeed");
 
+const { userSpec } = require("./bootstrap");
+const UsersController = require("../src/lib/controllers/users");
+
 describe("Dynatrace", () => {
   it("should convert ISO 8601 ranges to appropriate dynatrace relative ranges", () => {
     const hour = Util.Dynatrace.rangeToRelativeTime("PT48M");
@@ -22,5 +25,11 @@ describe("Dynatrace", () => {
   it("should compute stats about problems from the feed", () => {
     const computed = Util.Dynatrace.problemStats(problems);
     expect(computed).to.deep.equal(stats);
+  });
+
+  it("should summarize a list of problems", async () => {
+    const user = await UsersController.create(userSpec);
+    const summary = await Util.Dynatrace.summarize(user, problems).toString();
+    expect(summary).to.equal("The most affected application was www.easytravel.com, which was affected by 20 issues. The largest concentration of problems was around 04/24/2017 at 10:00 PM.");
   });
 });

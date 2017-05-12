@@ -1,5 +1,6 @@
 const _ = require("lodash");
 const moment = require("moment");
+const { sb } = require("./builder");
 
 /**
  * Compute stats on a problem detail reponse
@@ -139,7 +140,13 @@ function groupByHour(problems) {
  *
  */
 function problemStats(problems) {
+  const allImpacts = _.flatMap(problems, problem => problem.rankedImpacts);
+  const affectedApplications = _.uniq(_.map(_.filter(allImpacts, { impactLevel: "APPLICATION" }), "entityId"));
+  const rooted = _.filter(problems, "hasRootCause");
   return {
+    allImpacts,
+    affectedApplications,
+    rooted,
     affectedEntities: getAffectedEntities(problems),
     hourly: groupByHour(problems),
     firstProblem: _.minBy(problems, "startTime"),
@@ -163,6 +170,46 @@ function rangeToRelativeTime(range) {
         (duration <= 24 * 60 * 60) ? "day" :
           (duration <= 7 * 24 * 60 * 60) ? "week" :
             "month";
+}
+
+function summarize(user, problems, app = false, present = false) {
+  const stats = problemStats(problems);
+  const out = sb(user);
+
+  // Which application was the most heavily affected?
+  if (!app) {
+    const appCounts = _.countBy(_.filter(stats.allImpacts, { impactLevel: "APPLICATION" }), "entityId");
+    const mostAffected = _.maxBy(Object.keys(appCounts), eid => appCounts[eid]);
+    const mostAffectedCount = _.filter(problems, problem =>
+      _.filter(problem.rankedImpacts, { entityId: mostAffected }).length).length;
+    out.s("The most affected application").s("is", "was", present).e(mostAffected, stats.affectedEntities[mostAffected])
+      .c.s("which is being affected by", "which was affected by", present).s(mostAffectedCount).s("issue.", "issues.", mostAffectedCount);
+  }
+
+  // Which entity caused the most roots?
+  if (stats.rooted.length > 2) {
+    const rootImpacts = stats.rooted.map(root => root.rankedImpacts[0]);
+    const rootEntityCounts = _.countBy(rootImpacts, "entityId");
+    const topRootEntity = _.maxBy(Object.keys(rootEntityCounts), eid => rootEntityCounts[eid]);
+    const topRootEntityCount = rootEntityCounts[topRootEntity];
+    if (topRootEntityCount > 2) {
+      out.e(topRootEntity, stats.affectedEntities[topRootEntity]).s("is", "was", present).s("particularly troublesome,")
+        .s("causing").s(topRootEntityCount).s("problems.");
+    }
+  }
+
+  // Were the problems concentrated in a particular hour?
+  if (Object.keys(stats.hourly).length === 1) {
+    out.s("These issues all occurred at around the same time");
+  } else {
+    const topHour = _.maxBy(Object.keys(stats.hourly), hour => stats.hourly[hour].length);
+    const topHourCount = stats.hourly[topHour].length;
+    if (topHourCount > 2) {
+      out.s("The largest concentration of problems was around").ts(Number.parseInt(topHour, 10)).s(".");
+    }
+  }
+
+  return out;
 }
 
 /**
@@ -193,5 +240,6 @@ module.exports = {
   getAffectedEntities,
   problemStats,
   rangeToRelativeTime,
+  summarize,
   unmodelProblem,
 };

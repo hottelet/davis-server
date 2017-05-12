@@ -197,7 +197,7 @@ function manyProblems(user, range, problems) {
   return {
     text: sb(user)
       .s("In the last").d(range).s(problems.length)
-      .s("problems occurred. Would you like to see a listing of these issues?"),
+      .s("problems occurred.").s(Util.Dynatrace.summarize(user, problems)).s("Would you like to see a listing of these issues?"),
     targets: {
       yes: {
         intent: "davisPagerShow",
