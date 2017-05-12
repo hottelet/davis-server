@@ -56,17 +56,4 @@ v1.use("/dynatrace", dynatrace);
 // Global API 404
 v1.use((req, res, next) => { next(new DError("Invalid route!", 404)); }); // eslint-disable-line no-unused-vars
 
-// Global API Error Handler
-v1.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
-  const code = err.statusCode || 500;
-  const message = (err.name === "DavisError") ? err.message : "An unhandled error occurred";
-
-  if (err.name !== "DavisError") {
-    logger.error({ err });
-  } else {
-    logger.debug(message);
-  }
-  res.status(code).json({ success: false, message });
-});
-
 module.exports.v1 = v1;

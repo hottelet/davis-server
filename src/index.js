@@ -67,6 +67,24 @@ mongoose.connect(mongoString)
     const port = process.env.DAVIS_PORT || 8080;
     app.listen(port);
     logger.debug(`Listening on http://0.0.0.0:${port}/`);
+
+    // Global Error Handler
+    app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
+      // Syntax Errors are thrown by the json parser
+      if (err instanceof SyntaxError) {
+        return res.status(400).json({ success: false, message: err.message });
+      }
+
+      const code = err.statusCode || 500;
+      const message = (err.name === "DavisError") ? err.message : "An unhandled error occurred";
+
+      if (err.name !== "DavisError") {
+        logger.error({ err });
+      } else {
+        logger.debug(message);
+      }
+      return res.status(code).json({ success: false, message });
+    });
   })
   .catch((err) => {
     logger.error(err);
