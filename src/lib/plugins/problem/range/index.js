@@ -196,7 +196,7 @@ function appClosedProblem(user, range, problem, entity) {
 function manyProblems(user, range, problems) {
   return {
     text: sb(user)
-      .s("In the last").d(range).s(problems.length)
+      .s("In the last").d(range).c.s(problems.length)
       .s("problems occurred.").s(Util.Dynatrace.summarize(user, problems)).s("Would you like to see a listing of these issues?"),
     targets: {
       yes: {
@@ -212,7 +212,7 @@ function manyProblems(user, range, problems) {
 function appManyProblems(user, range, problems, entity) {
   return {
     text: sb(user)
-      .s("In the last").d(range).s(problems.length)
+      .s("In the last").d(range).c.s(problems.length)
       .s("problems affected").e(entity.entityId, entity.name).p.s(Util.Dynatrace.summarize(user, problems, true)).s("Would you like to see a listing of these issues?"),
     targets: {
       yes: {
