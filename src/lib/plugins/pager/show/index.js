@@ -11,9 +11,19 @@ class ShowPage extends Plugin {
 
   async ask(req) {
     req.context.set("paging.active", -1);
+    const numPages = Math.ceil(req.context.paging.items.length / 3);
+
+    if (req.slots.pageNum) {
+      const pageNum = Number.parseInt(req.slots.pageNum, 10) - 1;
+      if (pageNum < 0 || pageNum >= numPages) {
+        return { text: "That isn't a valid page number" };
+      }
+      req.context.set("paging.page", pageNum);
+    }
+
     const paging = req.context.paging;
     const first = paging.page * 3;
-    const numPages = Math.ceil(paging.items.length / 3);
+
 
     const currentPage = paging.items.slice(first, first + 3);
     const ret = await ((currentPage.length === 0) ? { text: sb(req.user).s("Oh no! It appears that the pager had an error") } :
