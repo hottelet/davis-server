@@ -62,6 +62,6 @@ const contextSchema = new mongoose.Schema({
   url: String,
 }, { timestamps: true });
 
-contextSchema.index({ updatedAt: 1 }, { expires: 300 });
+contextSchema.index({ updatedAt: 1 }, { expires: "24h" });
 
 module.exports = mongoose.model("Context", contextSchema);
