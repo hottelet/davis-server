@@ -1,6 +1,7 @@
 // global modules
 const Router = require("express").Router;
 const Joi = require("joi");
+const moment = require("moment-timezone");
 
 // davis modules
 const davis = require("../../core/davis");
@@ -18,14 +19,22 @@ v1.use(auth);
 
 v1.post("/ask", async (req, res, next) => {
   try {
-    const schema = Joi.object().keys({ raw: Joi.string().min(1).required() });
+    const schema = Joi.object().keys({
+      raw: Joi.string().min(1).required(),
+      timezone: Joi.any().valid(moment.tz.names()).options({ language: { any: { allowOnly: "is invalid" } } }),
+    });
 
     const validate = Joi.validate(req.body, schema);
 
     if (validate.error) {
       throw new DError(validate.error.details[0].message, 400);
+    } else if (validate.value.timezone) {
+      const tz = validate.value.timezone;
+      if (req.user.timezone !== tz) {
+        logger.info({ user: req.user }, `Updating the timezone to '${tz}' for this request.`);
+        req.user.tempTimezone = tz;
+      }
     }
-
 
     const dreq = {
       raw: validate.value.raw,
