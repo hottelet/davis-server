@@ -213,7 +213,7 @@ function appManyProblems(user, range, problems, entity) {
   return {
     text: sb(user)
       .s("In the last").d(range).s(problems.length)
-      .s("problems affected").e(entity.entityId, entity.name).p.s("Would you like to see a listing of these issues?"),
+      .s("problems affected").e(entity.entityId, entity.name).p.s(Util.Dynatrace.summarize(user, problems, true)).s("Would you like to see a listing of these issues?"),
     targets: {
       yes: {
         intent: "davisPagerShow",
