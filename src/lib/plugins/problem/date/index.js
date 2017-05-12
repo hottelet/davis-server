@@ -57,7 +57,7 @@ async function response(req) {
 async function appResponse(req, entity) {
   const timeRange = Util.Date.dateParser(req.slots.date, req.user);
   const unfiltered = await Dynatrace.problemFeed(req.user, { timeRange });
-  const problems = Dynatrace.filterProblemFeed(unfiltered, { entityId: entity.entityId });
+  const problems = Util.Dynatrace.filterProblemFeed(unfiltered, { entityId: entity.entityId });
   return (problems.length === 0) ? appNoProblem(req, entity) :
     (problems.length === 1) ? appOneProblem(req, problems[0], entity) :
       appManyProblems(req, problems, entity);

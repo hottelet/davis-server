@@ -7,6 +7,7 @@ const Aliases = require("../../controllers/aliases");
 const ProblemDetails = require("../../controllers/problemDetails");
 const logger = require("../logger");
 const DError = require("../../core/error");
+const Util = require("../../util");
 
 /**
  * Static class for interacting with Dynatrace
@@ -200,7 +201,7 @@ class Dynatrace {
       !(/^hour$|^2hours$|^6hours$|^day$|^week$|^month$/.test(options.relativeTime))) {
       const range = options.relativeTime;
       const duration = moment.duration(range);
-      dynatraceOptions.relativeTime = Dynatrace.rangeToRelativeTime(range);
+      dynatraceOptions.relativeTime = Util.Dynatrace.rangeToRelativeTime(range);
       const res = await Dynatrace.get(user, "problem/feed", dynatraceOptions);
       return res
         .result
@@ -212,7 +213,7 @@ class Dynatrace {
       const startTime = options.timeRange.startTime;
       const endTime = options.timeRange.endTime;
       const range = moment.duration(moment().valueOf() - startTime);
-      dynatraceOptions.relativeTime = Dynatrace.rangeToRelativeTime(range);
+      dynatraceOptions.relativeTime = Util.Dynatrace.rangeToRelativeTime(range);
       const res = await Dynatrace.get(user, "problem/feed", dynatraceOptions);
       return res
         .result
@@ -224,42 +225,6 @@ class Dynatrace {
 
     const res = await Dynatrace.get(user, "problem/feed", dynatraceOptions);
     return res.result.problems;
-  }
-
-  /**
-   * Filter this list of problems by time range, impactLevel, status,
-   * entityId, or severityLevel using the options object
-   *
-   * @static
-   * @param {IProblem[]} problems
-   * @param {IFilterOptions} options
-   * @returns
-   *
-   * @memberof Dynatrace
-   */
-  static filterProblemFeed(problems, options) {
-    let filtered = _.cloneDeep(problems);
-
-    // filter by impactLevel, status, severityLevel
-    if (options.impactLevel || options.status || options.severityLevel) {
-      const lodashFilterOptions = _.pick(options, ["impactLevel", "status", "severityLevel"]);
-      filtered = _.filter(filtered, lodashFilterOptions);
-    }
-
-    // { startTime, endTime }
-    if (options.timeRange && options.timeRange.startTime && options.timeRange.endTime) {
-      filtered = _.filter(filtered, problem =>
-        problem.startTime > options.timeRange.startTime &&
-        problem.startTime < options.timeRange.endTime);
-    }
-
-    // filter by entityId
-    if (options.entityId) {
-      filtered = _.filter(filtered, problem =>
-        _.filter(problem.rankedImpacts, { entityId: options.entityId }).length > 0);
-    }
-
-    return filtered;
   }
 
   /**
@@ -275,177 +240,13 @@ class Dynatrace {
   static async problemDetails(user, pid) {
     const details = await ProblemDetails.get(user, pid);
     if (details) {
-      return this.unmodelProblem(details);
+      return Util.Dynatrace.unmodelProblem(details);
     }
     const res = await Dynatrace.get(user, `problem/details/${pid}`);
     if (res.result.status === "OPEN") {
       return res.result;
     }
-    return this.unmodelProblem(await ProblemDetails.create(user, res.result));
-  }
-
-  /**
-   * Turn a problem detail model into normal Dynatrace object format
-   *
-   * @param {IProblemDetailModel} problem
-   * @returns {IProblemDetail}
-   *
-   * @memberOf Dynatrace
-   */
-  static unmodelProblem(problem) {
-    const out = problem.toObject();
-    return {
-      id: out.pid,
-      startTime: out.startTime,
-      endTime: out.endTime,
-      displayName: out.displayName,
-      impactLevel: out.impactLevel,
-      status: out.status,
-      severityLevel: out.severityLevel,
-      rankedEvents: out.rankedEvents,
-      tagsOfAffectedEntities: out.tagsOfAffectedEntities,
-    };
-  }
-
-  /**
-   * Convert an ISO 8601 date range into a Dynatrace relativeTime
-   *
-   * @static
-   * @param {string} range
-   * @returns {string}
-   *
-   * @memberOf Dynatrace
-   */
-  static rangeToRelativeTime(range) {
-    const duration = moment.duration(range).asSeconds();
-    return (duration <= 60 * 60) ? "hour" :
-           (duration <= 2 * 60 * 60) ? "2hours" :
-           (duration <= 6 * 60 * 60) ? "6hours" :
-           (duration <= 24 * 60 * 60) ? "day" :
-           (duration <= 7 * 24 * 60 * 60) ? "week" :
-           "month";
-  }
-
-  /**
-   * Compute stats on a problem detail reponse
-   *
-   * @static
-   * @param {IProblemDetail} detail
-   * @returns
-   *
-   * @memberof Dynatrace
-   */
-  static detailStats(detail) {
-    const affectedEntities = {};
-
-    _.forEach(detail.rankedEvents, (event) => {
-      affectedEntities[event.entityId] = event.entityName;
-    });
-
-    const affectedApplications = _.uniq(_.map(_.filter(detail.rankedEvents, e => e.impactLevel === "APPLICATION"), "entityId"));
-
-    return {
-      affectedEntities,
-      affectedApplications,
-      topEvent: detail.rankedEvents[detail.rankedEvents.length - 1],
-      roots: _.filter(detail.rankedEvents, "isRootCause"),
-      eventTypes: _.uniq(_.map(detail.rankedEvents, "eventType")),
-      eventStats: Dynatrace.eventStats(detail.rankedEvents),
-      open: detail.status === "OPEN",
-    };
-  }
-
-  /**
-   * Compute stats about a list of events
-   *
-   * @static
-   * @param {IRankedEvents} eventList
-   * @returns {IEventStats}
-   *
-   * @memberof Dynatrace
-   */
-  static eventStats(eventList) {
-    const stats = {};
-    const groupedEvents = _.groupBy(eventList, "eventType");
-    const types = _.uniq(_.map(eventList, "eventType"));
-
-    types.forEach((type) => {
-      const events = groupedEvents[type];
-      const count = events.length;
-      const open = events.filter(e => e.status === "OPEN");
-      const openCount = open.length;
-      const closedCount = count - openCount;
-      const roots = _.filter(events, "isRootCause");
-      const root = roots.length > 0;
-      const locations = _.flatMap(events, e => e.affectedSyntheticLocations || []);
-
-      const affectedApplications = _.uniq(_.map(_.filter(events, { impactLevel: "APPLICATION" }), "entityId"));
-
-      stats[type] = {
-        affectedApplications,
-        events,
-        count,
-        open,
-        openCount,
-        closedCount,
-        root,
-        roots,
-        locations,
-      };
-    });
-
-    return stats;
-  }
-
-  /**
-   * Compute stats about a list of problems
-   *
-   * @static
-   * @param {IProblem[]} problems
-   * @returns
-   *
-   * @memberOf Dynatrace
-   */
-  static problemStats(problems) {
-    return {
-      affectedEntities: Dynatrace.affectedEntities(problems),
-      hourly: Dynatrace.groupByHour(problems),
-      firstProblem: _.minBy(problems, "startTime"),
-      lastProblem: _.maxBy(problems, "startTime"),
-      openProblems: _.filter(problems, { status: "OPEN" }),
-    };
-  }
-
-  /**
-   * Group problems by the hour in which they start
-   *
-   * @static
-   * @param {IProblem[]} problems
-   * @returns {[hour: string]: IProblem[]}
-   *
-   * @memberOf Dynatrace
-   */
-  static groupByHour(problems) {
-    return _.groupBy(problems, problem => (Math.floor(problem.startTime / 3600000) * 3600000));
-  }
-
-  /**
-   * Get a stringmap of entity ids to entity names affected
-   *
-   * @static
-   * @param {IProblem[]} problems
-   * @returns
-   *
-   * @memberOf Dynatrace
-   */
-  static affectedEntities(problems) {
-    const entities = {};
-    problems.forEach((problem) => {
-      problem.rankedImpacts.forEach((impact) => {
-        entities[impact.entityId] = impact.entityName;
-      });
-    });
-    return entities;
+    return Util.Dynatrace.unmodelProblem(await ProblemDetails.create(user, res.result));
   }
 
   /**

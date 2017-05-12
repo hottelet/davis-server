@@ -3,7 +3,7 @@
 const Plugin = require("../../../core/plugin");
 const { cb, sb } = require("../../../util/builder");
 const Dynatrace = require("../../../core/dynatrace");
-const Linker = require("../../../util/linker");
+const Util = require("../../../util");
 
 class DetailProblem extends Plugin {
   constructor() {
@@ -22,7 +22,7 @@ class DetailProblem extends Plugin {
    */
   async yes(req, pid) {
     const detail = await Dynatrace.problemDetails(req.user, pid);
-    const stats = Dynatrace.detailStats(detail);
+    const stats = Util.Dynatrace.detailStats(detail);
 
     const summary = getSummary(req, detail);
     const cards = stats.eventTypes.map(etype => eventHandler(req, etype, stats));
@@ -55,7 +55,7 @@ function getSummary(req, detail) {
   return cb(req.user)
     .color(detail.status)
     .title(problemTitle(req.user, detail))
-    .url(Linker.problem(req.user, detail.id))
+    .url(Util.Linker.problem(req.user, detail.id))
     .field("Time Frame", sb(req.user).tr(detail.startTime, detail.endTime, true));
 }
 
