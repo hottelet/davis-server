@@ -9,6 +9,7 @@ module.exports = [
   require("./problem/detail"),
 
   require("./userActivity/general"),
+  require("./userActivity/range"),
 
   require("./choice/numeric"),
   require("./choice/yes"),
