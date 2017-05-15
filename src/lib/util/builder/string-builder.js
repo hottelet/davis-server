@@ -7,6 +7,7 @@ const Entity = require("./entity");
 const helpers = require("./helpers");
 const TimeRange = require("./time-range");
 const TimeStamp = require("./time-stamp");
+const Link = require("./link");
 const _ = require("lodash");
 const string = require("string");
 
@@ -161,6 +162,10 @@ class StringBuilder {
    */
   stringable(singular, plural, count) {
     return this.s(singular, plural, count);
+  }
+
+  link(url, text) {
+    return this.s(new Link(url, text));
   }
 
   /**

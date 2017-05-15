@@ -5,6 +5,8 @@ const Plugin = require("../../../core/plugin");
 const sb = require("../../../util/builder").sb;
 const Util = require("../../../util");
 
+const Linker = Util.Linker;
+
 /**
  * Plugin for asking about a recent range
  *
@@ -67,11 +69,11 @@ async function appResponse(req) {
  * @returns
  */
 function noProblems(user, range) {
-  return { text: sb(user).s("Nice! There were no problems in the last").d(range).p };
+  return { text: sb(user).s("Nice! There were no problems").link(Linker.duration(user, range), sb(user).s("in the last").d(range).p) };
 }
 
 function appNoProblems(user, range, entity) {
-  return { text: sb(user).s("Nice! There were no problems that affected").e(entity.entityId, entity.name).s("in the last").d(range).p };
+  return { text: sb(user).s("Nice! There were no problems that affected").e(entity.entityId, entity.name).link(Linker.duration(user, range), sb(user).s("in the last").d(range).p) };
 }
 
 /**
@@ -107,7 +109,7 @@ function appOneProblem(user, range, problem, entity) {
 function openProblem(user, range, problem) {
   const stats = Util.Dynatrace.problemStats([problem]);
   const out = sb(user)
-    .s("In the last").d(range).c.s("the only problem was a").h(problem.rankedImpacts[0].eventType)
+    .link(Linker.duration(user, range), sb(user).s("In the last").d(range)).c.s("the only problem was a").h(problem.rankedImpacts[0].eventType)
     .s("that started at").ts(problem.startTime).c.s("and is still ongoing.");
 
   const apps = stats.affectedEntities.APPLICATION || [];
@@ -123,7 +125,7 @@ function openProblem(user, range, problem) {
 function appOpenProblem(user, range, problem, entity) {
   const stats = Util.Dynatrace.problemStats([problem]);
   const out = sb(user)
-    .s("In the last").d(range).c.s("the only problem that affected").e(entity.entityId, entity.name).s("was a").h(problem.rankedImpacts[0].eventType)
+    .link(Linker.duration(user, range), sb(user).s("In the last").d(range)).c.s("the only problem that affected").e(entity.entityId, entity.name).s("was a").h(problem.rankedImpacts[0].eventType)
     .s("that started at").ts(problem.startTime).c.s("and is still ongoing.");
 
   const apps = stats.affectedEntities.APPLICATION || [];
@@ -148,7 +150,7 @@ function closedProblem(user, range, problem) {
 
   // Always starts the same way
   const out = sb(user)
-    .s("In the last").d(range).c.s("the only problem was a").h(problem.rankedImpacts[0].eventType)
+    .link(Linker.duration(user, range), sb(user).s("In the last").d(range)).c.s("the only problem was a").h(problem.rankedImpacts[0].eventType)
     .s("that started").ts(problem.startTime).c.s("and ended").ts(problem.endTime).p;
 
   const apps = stats.affectedEntities.APPLICATION || [];
@@ -173,7 +175,7 @@ function appClosedProblem(user, range, problem, entity) {
 
   // Always starts the same way
   const out = sb(user)
-    .s("In the last").d(range).c.s("the only problem that affected").e(entity.entityId, entity.name).s("was a").h(problem.rankedImpacts[0].eventType)
+    .link(Linker.duration(user, range), sb(user).s("In the last").d(range)).c.s("the only problem that affected").e(entity.entityId, entity.name).s("was a").h(problem.rankedImpacts[0].eventType)
     .s("that started").ts(problem.startTime).c.s("and ended").ts(problem.endTime).p;
 
   const apps = stats.affectedEntities.APPLICATION || [];
@@ -196,7 +198,7 @@ function appClosedProblem(user, range, problem, entity) {
 function manyProblems(user, range, problems) {
   return {
     text: sb(user)
-      .s("In the last").d(range).c.s(problems.length)
+      .link(Linker.duration(user, range), sb(user).s("In the last").d(range)).c.s(problems.length)
       .s("problems occurred.").s(Util.Dynatrace.summarize(user, problems)).s("Would you like to see a listing of these issues?"),
     targets: {
       yes: {
@@ -212,7 +214,7 @@ function manyProblems(user, range, problems) {
 function appManyProblems(user, range, problems, entity) {
   return {
     text: sb(user)
-      .s("In the last").d(range).c.s(problems.length)
+      .link(Linker.duration(user, range), sb(user).s("In the last").d(range)).c.s(problems.length)
       .s("problems affected").e(entity.entityId, entity.name).p.s(Util.Dynatrace.summarize(user, problems, true)).s("Would you like to see a listing of these issues?"),
     targets: {
       yes: {
