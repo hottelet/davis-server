@@ -19,4 +19,30 @@ module.exports.timer = () => {
   };
 };
 
+module.exports.linearRegression = (ys, xs) => {
+  const lr = {};
+  const n = ys.length;
+  let sumX = 0;
+  let sumY = 0;
+  let sumXY = 0;
+  let sumXX = 0;
+  let sumYY = 0;
+
+  ys.forEach((v, i) => {
+    const x = xs[i];
+    const y = ys[i];
+
+    sumX += x;
+    sumY += y;
+    sumXY += x * y;
+    sumXX += x * x;
+    sumYY += y * y;
+  });
+
+  lr.slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX); // eslint-disable-line
+  lr.intercept = (sumY - lr.slope * sumX) / n; // eslint-disable-line
+  lr.r2 = ((n*sumXY - sumX * sumY) / Math.sqrt((n * sumXX - sumX * sumX) * (n * sumYY - sumY * sumY))) ** 2; // eslint-disable-line
+  return lr;
+};
+
 module.exports.Linker = Linker;

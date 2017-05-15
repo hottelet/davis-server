@@ -234,6 +234,20 @@ function unmodelProblem(problem) {
   };
 }
 
+function userActivityStats(activity) {
+  const topApp = _.maxBy(_.keys(activity.dataPoints), app =>
+    _.sum(activity.dataPoints[app].map(dp => dp[1])));
+  const topAppMax = _.maxBy(activity.dataPoints[topApp], dp => dp[1]);
+  const topAppMean = Math.floor(_.meanBy(activity.dataPoints[topApp], dp => dp[1]));
+
+  topAppMax[1] = Math.floor(topAppMax[1]);
+  return {
+    topApp,
+    topAppMax,
+    topAppMean,
+  };
+}
+
 module.exports = {
   detailStats,
   filterProblemFeed,
@@ -242,4 +256,5 @@ module.exports = {
   rangeToRelativeTime,
   summarize,
   unmodelProblem,
+  userActivityStats,
 };

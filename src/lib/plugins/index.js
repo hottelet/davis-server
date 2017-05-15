@@ -8,6 +8,8 @@ module.exports = [
   require("./problem/range"),
   require("./problem/detail"),
 
+  require("./userActivity/general"),
+
   require("./choice/numeric"),
   require("./choice/yes"),
   require("./choice/no"),

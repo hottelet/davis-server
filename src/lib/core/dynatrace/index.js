@@ -68,6 +68,27 @@ class Dynatrace {
     }
   }
 
+  static async getUserActivity(user, options) {
+    const params = _.assign({
+      timeseriesId: "com.dynatrace.builtin:app.useractionsperminute",
+      queryMode: "series",
+      aggregationType: "count",
+    }, options);
+
+    const ts = await Dynatrace.get(user, "timeseries", params);
+    return ts.result;
+  }
+
+  static async predictUserActivity(user, entity) {
+    const params = {
+      entity,
+      relativeTime: "30mins",
+      predict: true,
+    };
+
+    return this.getUserActivity(user, params);
+  }
+
   /**
    * Find an application that sounds like the given string
    *

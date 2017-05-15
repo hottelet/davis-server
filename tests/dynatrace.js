@@ -1,6 +1,7 @@
 const expect = require("chai").expect;
 const Util = require("../src/lib/util");
 const { problems, stats } = require("./data/problemFeed");
+const userActivity = require("./data/userActivity");
 
 const { userSpec } = require("./bootstrap");
 const UsersController = require("../src/lib/controllers/users");
@@ -31,5 +32,14 @@ describe("Dynatrace", () => {
     const user = await UsersController.create(userSpec);
     const summary = await Util.Dynatrace.summarize(user, problems).toString();
     expect(summary).to.equal("The most affected application was www.easytravel.com, which was affected by 20 issues. The largest concentration of problems was around 04/24/2017 at 10:00 PM.");
+  });
+
+  it("should compute stats about user activity", async () => {
+    const computed = Util.Dynatrace.userActivityStats(userActivity);
+
+    expect(computed.topApp).to.equal("APPLICATION-884BE7FEA3CE14B6");
+    expect(computed.topAppMax[0]).to.equal(1494802800000);
+    expect(computed.topAppMax[1]).to.equal(318);
+    expect(computed.topAppMean).to.equal(223);
   });
 });
