@@ -101,7 +101,7 @@ async function appOneProblem(req, problem, entity) {
 async function manyProblems(req, problems) {
   return {
     text: sb(req.user)
-      .date(req.slots.date).s(problems.length)
+      .date(req.slots.date).c.s(problems.length)
       .s("problems occurred. Would you like to see a listing of these issues?"),
     targets: {
       yes: {
@@ -117,7 +117,7 @@ async function manyProblems(req, problems) {
 async function appManyProblems(req, problems, entity) {
   return {
     text: sb(req.user)
-      .date(req.slots.date).s(problems.length)
+      .date(req.slots.date).c.s(problems.length)
       .s("problems affected").e(entity.entityId, entity.name).p.s("Would you like to see a listing of these issues?"),
     targets: {
       yes: {
