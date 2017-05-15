@@ -75,6 +75,36 @@ class Dynatrace {
       aggregationType: "count",
     }, options);
 
+    if (options.relativeTime &&
+      !(/^hour$|^2hours$|^6hours$|^day$|^week$|^month$|^30mins$/.test(options.relativeTime))) {
+      const range = options.relativeTime;
+      const duration = moment.duration(range);
+      params.relativeTime = Util.Dynatrace.rangeToRelativeTime(range);
+      const activity = await Dynatrace.getUserActivity(user, params);
+      const start = moment().subtract(duration).valueOf();
+      Object.keys(activity.dataPoints).forEach((entity) => {
+        activity.dataPoints[entity] = activity
+          .dataPoints[entity]
+          .filter(dp => dp[0] > start);
+      });
+      return activity;
+    }
+
+    if (options.timeRange) {
+      const startTime = options.timeRange.startTime;
+      const endTime = options.timeRange.endTime;
+      const range = moment.duration(moment().valueOf() - startTime);
+      params.relativeTime = Util.Dynatrace.rangeToRelativeTime(range);
+
+      const activity = await Dynatrace.getUserActivity(user, params);
+      Object.keys(activity.dataPoints).forEach((entity) => {
+        activity.dataPoints[entity] = activity
+          .dataPoints[entity]
+          .filter(dp => dp[0] > startTime && dp[0] < endTime);
+      });
+      return activity;
+    }
+
     const ts = await Dynatrace.get(user, "timeseries", params);
     return ts.result;
   }
