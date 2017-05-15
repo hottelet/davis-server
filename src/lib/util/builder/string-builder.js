@@ -236,11 +236,11 @@ class StringBuilder {
     const thisWeek = moment().isoWeek();
     if (grain === "week") {
       if (thisWeek === moment(startTime).isoWeek()) {
-        this.s("this week");
+        this.s("This week");
       } else if (thisWeek === moment(startTime).add(1, "week").isoWeek()) {
-        this.s("last week");
+        this.s("Last week");
       } else if (thisWeek === moment(startTime).subtract(1, "week").isoWeek()) {
-        this.s("next week");
+        this.s("Next week");
       } else {
         this.ts(startTime, endTime);
       }
