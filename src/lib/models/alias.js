@@ -20,4 +20,3 @@ aliasSchema.index({ entityId: 1, tenant: 1 }, { unique: [true, "This entity alre
 
 aliasSchema.post("save", DError.handleMongoError);
 module.exports = mongoose.model("Alias", aliasSchema);
-
