@@ -20,6 +20,10 @@ module.exports = [
   require("./pager/previous"),
 
   require("./general/thanks"),
+  require("./general/launch"),
+  require("./general/cancel"),
+  require("./general/help"),
+  require("./general/stop"),
 
   require("./tenant/active"),
 
