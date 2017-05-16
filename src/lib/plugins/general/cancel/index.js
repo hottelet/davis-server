@@ -9,7 +9,7 @@ class Cancel extends Plugin {
   }
 
   async ask(req) {
-    return this.davis.plugins.stop.ask(req);
+    return this.davis.plugins.davisGeneralStop.ask(req);
   }
 }
 
