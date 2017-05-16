@@ -1,6 +1,7 @@
 const Router = require("express").Router;
 const Users = require("../../../controllers/users");
 const davis = require("../../../core/davis");
+const support = require("../../../core/support");
 
 const version = require("../../../../../package.json").version;
 
@@ -13,14 +14,14 @@ system.get("/version", (req, res) => {
   });
 });
 
-system.get("/phrases", (req, res) => {
-  let plugins = [];
-  for (var key in davis.plugins) {
-    if (davis.plugins[key].support) plugins.push(davis.plugins[key].support);
-  }
+system.get("/plugins", (req, res) => {
+  const plugins = support.getPlugins(davis);
+  const slotTypes = support.getSlotTypes();
+
   res.json({
     success: true,
-    phrases: plugins,
+    plugins,
+    slotTypes,
   });
 });
 

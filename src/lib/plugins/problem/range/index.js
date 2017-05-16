@@ -4,6 +4,7 @@ const Dynatrace = require("../../../core/dynatrace");
 const Plugin = require("../../../core/plugin");
 const sb = require("../../../util/builder").sb;
 const Util = require("../../../util");
+const support = require("./support");
 
 const Linker = Util.Linker;
 
@@ -19,6 +20,7 @@ class RangeProblem extends Plugin {
   constructor() {
     super(...arguments);
     this.name = "davisProblemRange";
+    this.support = support;
   }
 
   /**

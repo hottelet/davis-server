@@ -4,11 +4,13 @@ const Plugin = require("../../../core/plugin");
 const { cb, sb } = require("../../../util/builder");
 const Dynatrace = require("../../../core/dynatrace");
 const Util = require("../../../util");
+const support = require("./support");
 
 class DetailProblem extends Plugin {
   constructor() {
     super(...arguments);
     this.name = "davisProblemDetail";
+    this.support = support;
   }
 
   /**
