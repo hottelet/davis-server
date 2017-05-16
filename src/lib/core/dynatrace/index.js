@@ -69,11 +69,11 @@ class Dynatrace {
   }
 
   static async getUserActivity(user, options) {
-    const params = _.assign({
+    const params = _.pick(_.assign({
       timeseriesId: "com.dynatrace.builtin:app.useractionsperminute",
       queryMode: "series",
       aggregationType: "count",
-    }, options);
+    }, options), ["timeseriesId", "queryMode", "aggregationType", "relativeTime"]);
 
     if (options.relativeTime &&
       !(/^hour$|^2hours$|^6hours$|^day$|^week$|^month$|^30mins$/.test(options.relativeTime))) {
