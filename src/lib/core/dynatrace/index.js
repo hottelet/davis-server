@@ -380,7 +380,6 @@ class Dynatrace {
   }
 
   static async addCommentToProblem(user, pid, comment) {
-    // const context = ;
     return this.post(user, `problem/details/${pid}/comments`, { comment, user: user.identifier, context: "Davis Managed" });
   }
 }
