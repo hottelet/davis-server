@@ -20,7 +20,9 @@ module.exports = [
   require("./userActivity/dow"),
   require("./userActivity/range"),
 
-  require("./choice/numeric"),
+  require("./choice/numeric/first"),
+  require("./choice/numeric/second"),
+  require("./choice/numeric/third"),
   require("./choice/yes"),
   require("./choice/no"),
 
