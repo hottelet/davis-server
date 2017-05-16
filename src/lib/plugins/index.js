@@ -7,8 +7,18 @@ module.exports = [
   require("./problem/open"),
   require("./problem/range"),
   require("./problem/detail"),
+  require("./problem/comment/add"),
 
+  require("./userActivity/app"),
   require("./userActivity/general"),
+
+  require("./userActivity/appDate"),
+  require("./userActivity/appDow"),
+  require("./userActivity/appRange"),
+
+  require("./userActivity/date"),
+  require("./userActivity/dow"),
+  require("./userActivity/range"),
 
   require("./choice/numeric"),
   require("./choice/yes"),

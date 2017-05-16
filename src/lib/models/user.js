@@ -79,6 +79,14 @@ class UserClass {
     return this.tenant.apiUrl || this.tenant.url;
   }
 
+  get identifier() {
+    const first = this.firstName;
+    const last = this.lastName;
+    const email = this.email;
+
+    return (first || last) ? `${first} ${last}`.trim() : email;
+  }
+
   dynatraceApiTokens() {
     const active = this.tenant.access.active % this.tenant.access.tokens.length;
     return this.tenant.access.tokens.slice(active)
