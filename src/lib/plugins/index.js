@@ -7,6 +7,7 @@ module.exports = [
   require("./problem/open"),
   require("./problem/range"),
   require("./problem/detail"),
+  require("./problem/comment/add"),
 
   require("./userActivity/app"),
   require("./userActivity/general"),
