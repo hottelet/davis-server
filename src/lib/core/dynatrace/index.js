@@ -68,6 +68,48 @@ class Dynatrace {
     }
   }
 
+  static async post(user, endpoint, body, tokens) {
+    const baseUrl = user.dynatraceApiUrl;
+    const apiTokens = tokens || user.dynatraceApiTokens();
+    const apiToken = apiTokens.shift();
+
+    const uri = `${baseUrl}/api/v1/${endpoint}`;
+
+    try {
+      const response = await rp.post(uri, {
+        headers: {
+          Authorization: `Api-Token ${apiToken}`,
+        },
+        json: true,
+        body,
+        timeout: 20000,
+        time: true,
+        transform: logDynatraceTimes,
+      });
+
+      const tenant = user.tenant;
+      await tenant.setActiveToken(apiToken);
+      return response;
+    } catch (err) {
+      if (err.statusCode === 400) {
+        if (_.has(err, "response.error.message")) {
+          throw new DError(`Unable to contact Dynatrace!  ${err.response.error.message}`);
+        }
+        throw new DError("Unable to contact Dynatrace!  Are you sure you set the correct URL?");
+      } else if (err.statusCode === 401) {
+        if (apiTokens.length > 0) {
+          return Dynatrace.post(user, endpoint, body, apiTokens);
+        }
+        throw new DError("The configured Dynatrace API token is invalid!");
+      } else if (err.error && err.error.code === "ENOENT") {
+        throw new DError("Unable to contact Dynatrace!  Are you sure you have an active network connection?");
+      } else {
+        logger.error(`Dynatrace responded with an unhandled status code of ${err.statusCode}.`);
+        throw new DError("Unfortunately, there was an issue communicating with Dynatrace.");
+      }
+    }
+  }
+
   static async getUserActivity(user, options) {
     const params = _.pick(_.assign({
       timeseriesId: "com.dynatrace.builtin:app.useractionsperminute",
@@ -335,6 +377,11 @@ class Dynatrace {
       }
       return app;
     });
+  }
+
+  static async addCommentToProblem(user, pid, comment) {
+    // const context = ;
+    return this.post(user, `problem/details/${pid}/comments`, { comment, user: user.identifier, context: "Davis Managed" });
   }
 }
 
