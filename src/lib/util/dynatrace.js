@@ -140,18 +140,38 @@ function groupByHour(problems) {
  *
  */
 function problemStats(problems) {
+  const rooted = _.filter(problems, "hasRootCause");
+  const roots = _.map(rooted, "rankedImpacts.0");
+
+  const eventCounts = _.countBy(roots, "eventType");
+  const entityCounts = _.countBy(roots, "entityId");
+
+  const topEvent = _.maxBy(_.keys(eventCounts), k => eventCounts[k]);
+  const topEventCount = eventCounts[topEvent];
+
+  const topEntity = _.maxBy(_.keys(entityCounts), k => entityCounts[k]);
+  const topEntityName = _.find(roots, { entityId: topEntity }).entityName;
+  const topEntityCount = entityCounts[topEntity];
+
   const allImpacts = _.flatMap(problems, problem => problem.rankedImpacts);
   const affectedApplications = _.uniq(_.map(_.filter(allImpacts, { impactLevel: "APPLICATION" }), "entityId"));
-  const rooted = _.filter(problems, "hasRootCause");
   return {
     allImpacts,
     affectedApplications,
     rooted,
+    roots,
     affectedEntities: getAffectedEntities(problems),
     hourly: groupByHour(problems),
     firstProblem: _.minBy(problems, "startTime"),
     lastProblem: _.maxBy(problems, "startTime"),
     openProblems: _.filter(problems, { status: "OPEN" }),
+    eventCounts,
+    entityCounts,
+    topEvent,
+    topEventCount,
+    topEntity,
+    topEntityCount,
+    topEntityName,
   };
 }
 
