@@ -10,6 +10,7 @@ const TimeStamp = require("./time-stamp");
 const Link = require("./link");
 const _ = require("lodash");
 const string = require("string");
+const events = require("./events");
 
 /**
  * String Builder
@@ -177,7 +178,11 @@ class StringBuilder {
    * @memberOf StringBuilder
    */
   h(item) {
-    return this.s(string(item).humanize().s.toLowerCase());
+    const event = _.find(events, { name: item });
+    if (event) {
+      return this.s(event.friendly);
+    }
+    return this.s(helpers.fixCaps(string(item).humanize().s.toLowerCase()));
   }
 
   /**
@@ -201,6 +206,10 @@ class StringBuilder {
    * @memberof StringBuilder
    */
   hc(item) {
+    const event = _.find(events, { name: item });
+    if (event) {
+      return this.s(helpers.fixCaps(string(event.friendly).titleCase().s));
+    }
     return this.s(helpers.fixCaps(string(item).humanize().titleCase().s));
   }
 
@@ -232,6 +241,7 @@ class StringBuilder {
   }
 
   date(date) {
+    console.log("hey");
     const { startTime, endTime, grain } = Util.Date.dateParser(date, this.user);
     const thisWeek = moment.tz(this.user.timezone).isoWeek();
     if (grain === "week") {

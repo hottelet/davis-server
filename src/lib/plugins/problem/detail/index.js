@@ -42,8 +42,14 @@ class DetailProblem extends Plugin {
 
   async listItem(req, id) {
     const details = await Dynatrace.problemDetails(req.user, id);
+
+    const last = details.rankedEvents.length - 1;
+    const text = sb(req.user)
+      .h(details.rankedEvents[last].eventType)
+      .s("on").e(details.rankedEvents[last].entityId, details.rankedEvents[last].entityName);
+
     return {
-      text: problemTitle(req.user, details),
+      text,
       value: details,
     };
   }
