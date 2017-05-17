@@ -115,7 +115,7 @@ function openRoot(req, problem, stats) {
   const rootEventEntityName = rootEvent.entityName;
   const rootEventEndTime = rootEvent.endTime;
 
-  const text = sb(req.user).s("There is currently a").hc(topEventType).s("on")
+  const text = sb(req.user).s("There is currently").hc(topEventType).s("on")
     .e(topEventEntityId, topEventEntityName).s("that started").ts(startTime).p
     .s("The root cause of this issue is a").hc(rootEventType).s("on")
     .e(rootEventEntityId, rootEventEntityName);
@@ -166,7 +166,7 @@ function openNoRoot(req, problem, stats) {
   const topEventEntityName = topEvent.entityName;
   const startTime = problem.startTime;
 
-  const text = sb(req.user).s("There is currently a").hc(topEventType).s("on")
+  const text = sb(req.user).s("There is currently").hc(topEventType).s("on")
     .e(topEventEntityId, topEventEntityName).s("that started").ts(startTime).p
     .s("Dynatrace was unable to determine a root cause for this issue.");
   // There is currently a {top event type} on {top event entity} that started {startTime}.
@@ -224,7 +224,7 @@ function closedRoot(req, problem, stats) {
   const rootEventEntityName = rootEvent.entityName;
   const rootEventEndTime = rootEvent.endTime;
 
-  const text = sb(req.user).s("There was a").hc(topEventType).s("on")
+  const text = sb(req.user).s("There was").hc(topEventType).s("on")
     .e(topEventEntityId, topEventEntityName).s("that started").ts(startTime)
     .s("and ended").ts(endTime).p.s("The root cause of this issue was a")
     .hc(rootEventType).s("on").e(rootEventEntityId, rootEventEntityName);
@@ -275,7 +275,7 @@ function closedNoRoot(req, problem, stats) {
   const startTime = problem.startTime;
   const endTime = problem.endTime;
 
-  const text = sb(req.user).s("There was a").hc(topEventType).s("on")
+  const text = sb(req.user).s("There was").hc(topEventType).s("on")
     .e(topEventEntityId, topEventEntityName).s("that started").ts(startTime)
     .s("and ended").ts(endTime).p
     .s("Dynatrace was unable to determine a root cause for this issue.");
