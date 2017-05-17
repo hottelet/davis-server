@@ -180,7 +180,7 @@ class StringBuilder {
   h(item) {
     const event = _.find(events, { name: item });
     if (event) {
-      return this.s(event.friendly);
+      return this.s(_.sample(event.friendly));
     }
     return this.s(helpers.fixCaps(string(item).humanize().s.toLowerCase()));
   }
@@ -208,7 +208,7 @@ class StringBuilder {
   hc(item) {
     const event = _.find(events, { name: item });
     if (event) {
-      return this.s(helpers.fixCaps(string(event.friendly).titleCase().s));
+      return this.s(helpers.fixCaps(string(_.sample(event.friendly)).titleCase().s));
     }
     return this.s(helpers.fixCaps(string(item).humanize().titleCase().s));
   }
