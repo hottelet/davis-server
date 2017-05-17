@@ -43,7 +43,8 @@ auth.post("/login", (req, res, next) => {
   passport.authenticate("local", (authErr, user) => {
     if (authErr) { next(authErr); return; }
     if (!user) {
-      throw new DError("Authentication failed.", 401);
+      next(new DError("Authentication failed.", 401));
+      return;
     }
     req.logIn(user, (loginErr) => {
       if (loginErr) { next(loginErr); return; }

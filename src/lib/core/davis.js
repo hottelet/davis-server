@@ -118,6 +118,7 @@ class Davis {
     logger.debug(`Lex found ${lexResponse.intentName}`);
     const plugin = this.plugins[lexResponse.intentName] || this.plugins.lexVersionMismatch;
     const slots = lexResponse.slots || {};
+    logger.debug(slots);
 
     if (!plugin) {
       return { text: "That plugin does not exist in Davis right now" };

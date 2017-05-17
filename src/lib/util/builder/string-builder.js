@@ -213,7 +213,7 @@ class StringBuilder {
    * @memberOf StringBuilder
    */
   d(range) {
-    const now = moment();
+    const now = moment.tz(this.user.timezone);
     const start = now.clone().subtract(moment.duration(range));
     this.state.push(Util.Date.preciseDiff(now, start));
     return this;
@@ -233,19 +233,19 @@ class StringBuilder {
 
   date(date) {
     const { startTime, endTime, grain } = Util.Date.dateParser(date, this.user);
-    const thisWeek = moment().isoWeek();
+    const thisWeek = moment.tz(this.user.timezone).isoWeek();
     if (grain === "week") {
-      if (thisWeek === moment(startTime).isoWeek()) {
+      if (thisWeek === moment.tz(startTime, this.user.timezone).isoWeek()) {
         this.s("This week");
-      } else if (thisWeek === moment(startTime).add(1, "week").isoWeek()) {
+      } else if (thisWeek === moment.tz(startTime, this.user.timezone).add(1, "week").isoWeek()) {
         this.s("Last week");
-      } else if (thisWeek === moment(startTime).subtract(1, "week").isoWeek()) {
+      } else if (thisWeek === moment.tz(startTime, this.user.timezone).subtract(1, "week").isoWeek()) {
         this.s("Next week");
       } else {
         this.ts(startTime, endTime);
       }
     } else if (grain === "day") {
-      this.s(moment(startTime).calendar(null, {
+      this.s(moment.tz(startTime, this.user.timezone).calendar(null, {
         sameDay: "[Today]",
         nextDay: "[Tomorrow]",
         nextWeek: "[Next] dddd",
