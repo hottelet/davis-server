@@ -1,6 +1,7 @@
 "use strict";
 
 const moment = require("moment");
+const relTimeParsers = require("./relTime");
 require("moment-precise-range-plugin");
 
 /**
@@ -110,6 +111,14 @@ class DDate {
     }
 
     return { startTime: 0, endTime: 0, grain: "error" };
+  }
+
+  static relTimeParser(relTime, user) {
+    const parser = relTimeParsers[relTime.toLowerCase()];
+    if (parser) {
+      return parser(user.timezone);
+    }
+    return null;
   }
 }
 
