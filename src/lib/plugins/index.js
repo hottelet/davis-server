@@ -8,6 +8,7 @@ module.exports = [
   require("./problem/range"),
   require("./problem/detail"),
   require("./problem/comment/add"),
+
   require("./problem/relTime"),
   require("./problem/appRelTime"),
 
@@ -44,7 +45,17 @@ module.exports = [
   require("./tenant/active"),
 
   require("./topRoots/general"),
+  require("./topRoots/date"),
+  require("./topRoots/dow"),
+  require("./topRoots/range"),
+  require("./topRoots/relTime"),
+
+
   require("./topRoots/app"),
+  require("./topRoots/appDate"),
+  require("./topRoots/appDow"),
+  require("./topRoots/appRange"),
+  require("./topRoots/appRelTime"),
 
   require("./lexVersionMismatch"),
 ];

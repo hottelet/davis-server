@@ -34,6 +34,10 @@ class TopRoots extends Plugin {
   async ask(req) {
     const problems = await Dynatrace.problemFeed(req.user, { relativeTime: "month" });
 
+    if (problems.length === 0) {
+      return { text: "Great! There were no problems detected in the last month!" };
+    }
+
     const {
       roots,
       topEvent,
@@ -42,6 +46,10 @@ class TopRoots extends Plugin {
       topEntity,
       topEntityName,
     } = Util.Dynatrace.problemStats(problems);
+
+    if (roots.length === 0) {
+      return { text: "Great! There were no problems with detected root causes in the last month!" };
+    }
 
     return {
       text: sb(req.user)
