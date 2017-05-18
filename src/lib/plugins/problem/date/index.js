@@ -82,6 +82,10 @@ async function oneProblem(req, problem) {
       text: sb(req.user).s("Only one problem occurred").date(req.slots.date).p,
       attachments: detail.show.attachments,
     },
+    paging: {
+      items: [{ id: problem.id, source: "davisProblemDetail", target: "davisProblemDetail" }],
+      active: 0,
+    },
   };
 }
 
@@ -94,6 +98,10 @@ async function appOneProblem(req, problem, entity) {
       text: sb(req.user).s("Only one problem occurred").date(req.slots.date).s("that affected")
         .e(entity.entityId, entity.name).p,
       attachments: detail.show.attachments,
+    },
+    paging: {
+      items: [{ id: problem.id, source: "davisProblemDetail", target: "davisProblemDetail" }],
+      active: 0,
     },
   };
 }

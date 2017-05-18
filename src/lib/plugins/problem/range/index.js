@@ -84,18 +84,22 @@ function appNoProblems(user, range, entity) {
  * @param {IProblem} problem
  * @returns
  */
-function oneProblem(user, range, problem) {
-  if (problem.status === "OPEN") {
-    return openProblem(user, range, problem);
-  }
-  return closedProblem(user, range, problem);
+async function oneProblem(user, range, problem) {
+  const out = await ((problem.status === "OPEN") ? openProblem(user, range, problem) : closedProblem(user, range, problem));
+  out.paging = {
+    items: [{ id: problem.id, source: "davisProblemDetail", target: "davisProblemDetail" }],
+    active: 0,
+  };
+  return out;
 }
 
-function appOneProblem(user, range, problem, entity) {
-  if (problem.status === "OPEN") {
-    return appOpenProblem(user, range, problem, entity);
-  }
-  return appClosedProblem(user, range, problem, entity);
+async function appOneProblem(user, range, problem, entity) {
+  const out = await ((problem.status === "OPEN") ? appOpenProblem(user, range, problem, entity) : appClosedProblem(user, range, problem, entity));
+  out.paging = {
+    items: [{ id: problem.id, source: "davisProblemDetail", target: "davisProblemDetail" }],
+    active: 0,
+  };
+  return out;
 }
 
 /**
