@@ -127,25 +127,31 @@ class StringBuilder {
    * @param {IBuildable} singular
    * @param {IBuildable} plural
    * @param {number | boolean | any[]} count
+   * @param {boolean} capitalize
    * @returns {StringBuilder} this
    *
    * @memberOf StringBuilder
    */
-  s(singular, plural, count) {
+  s(singular, plural, count, capitalize) {
     if (singular && singular.constructor && singular.constructor === Array) {
-      this.state.push(_.sample(singular));
-      return this;
+      return this.s(_.sample(singular), null, null, capitalize);
     }
     if (typeof count === "number") {
-      return (count === 1) ? this.s(singular) : this.s(plural);
+      return (count === 1) ?
+        this.s(singular, null, null, capitalize) :
+        this.s(plural, null, null, capitalize);
     }
     if (count && count.constructor === Array) {
-      return this.s(singular, plural, count.length);
+      return this.s(singular, plural, count.length, capitalize);
     }
     if (typeof count === "boolean") {
       if (!count) {
-        return this.s(plural);
+        return this.s(plural, null, null, capitalize);
       }
+    }
+    if (typeof singular === "string" && capitalize) {
+      const capped = singular.charAt(0).toUpperCase() + singular.slice(1);
+      return this.s(capped);
     }
     this.state.push(singular);
     return this;
