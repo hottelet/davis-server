@@ -17,10 +17,12 @@ module.exports = [
   require("./userActivity/appDate"),
   require("./userActivity/appDow"),
   require("./userActivity/appRange"),
+  require("./userActivity/appRelTime"),
 
   require("./userActivity/date"),
   require("./userActivity/dow"),
   require("./userActivity/range"),
+  require("./userActivity/relTime"),
 
   require("./choice/numeric/first"),
   require("./choice/numeric/second"),
