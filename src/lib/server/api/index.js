@@ -38,7 +38,7 @@ v1.post("/ask", async (req, res, next) => {
 
     const dreq = {
       raw: validate.value.raw,
-      scope: `${req.user.tenant}:web:${req.user.email}:${req.sessionID}`,
+      scope: `${req.user.tenant.id}:web:${req.user.email}:${req.sessionID}`,
       user: req.user,
     };
 
