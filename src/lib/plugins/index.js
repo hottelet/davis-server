@@ -40,6 +40,7 @@ module.exports = [
   require("./tenant/active"),
 
   require("./topRoots/general"),
+  require("./topRoots/app"),
 
   require("./lexVersionMismatch"),
 ];
