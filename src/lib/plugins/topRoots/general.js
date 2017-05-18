@@ -4,7 +4,6 @@ const Plugin = require("../../core/plugin");
 const Dynatrace = require("../../core/dynatrace");
 const sb = require("../../util/builder").sb;
 const Util = require("../../util");
-const _ = require("lodash");
 
 /**
  * Discover problematic root cause entities and event types

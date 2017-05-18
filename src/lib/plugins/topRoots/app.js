@@ -36,7 +36,8 @@ class TopRootsApp extends Plugin {
     if (!app) {
       return { text: `Could not find the application ${req.slots.app}.` };
     }
-    const problems = await Dynatrace.problemFeed(req.user, { relativeTime: "month", entity: app.entityId });
+    let problems = await Dynatrace.problemFeed(req.user, { relativeTime: "month" });
+    problems = Util.Dynatrace.filterProblemFeed(problems, { entityId: app.entityId });
 
     const {
       roots,
