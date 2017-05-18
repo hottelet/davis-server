@@ -28,6 +28,7 @@ if (process.env.DEBUG) {
 const alexaVerification = require("./lib/server/alexa/alexa-verify");
 const logger = require("./lib/core/logger");
 const api = require("./lib/server/api");
+const alexa = require("./lib/server/alexa");
 
 /*
  * Startup logic
@@ -58,10 +59,11 @@ mongoose.connect(mongoString)
 
     app.use((req, res, next) => {
       req.req_id = randtoken.generate(16);
-      logger.debug({ req, body: req.body });
+      logger.debug({ req });
       next();
     });
 
+    app.use("/alexa/v1", alexa.v1);
     app.use("/api/v1", api.v1);
 
     const port = process.env.DAVIS_PORT || 8080;
