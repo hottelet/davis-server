@@ -52,7 +52,7 @@ async function appResponse(req) {
   if (entity) {
     let problems = await Dynatrace.problemFeed(req.user, { relativeTime: range });
 
-    problems = Util.Dynatrace.filterProblemFeed(problems, entity);
+    problems = Util.Dynatrace.filterProblemFeed(problems, { entityId: entity.entityId });
 
     return (problems.length === 0) ? appNoProblems(req.user, range, entity) :
       (problems.length === 1) ? appOneProblem(req.user, range, problems[0], entity) :

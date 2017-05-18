@@ -9,6 +9,7 @@ module.exports = [
   require("./problem/detail"),
   require("./problem/comment/add"),
   require("./problem/relTime"),
+  require("./problem/appRelTime"),
 
   require("./userActivity/app"),
   require("./userActivity/general"),

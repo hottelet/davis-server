@@ -11,7 +11,7 @@ class DateProblem extends Plugin {
     this.name = "davisProblemRelTime";
   }
 
-  static async ask(req) {
+  async ask(req) {
     const timeRange = Util.Date.relTimeParser(req.slots.relTime, req.user);
     const problems = await Dynatrace.problemFeed(req.user, { timeRange });
     return (problems.length === 0) ? noProblem(req) :
