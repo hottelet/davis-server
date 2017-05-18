@@ -179,7 +179,7 @@ class Davis {
    */
   async fulfill(lexResponse, req) {
     logger.debug(`Lex found ${lexResponse.intentName}`);
-    const plugin = this.plugins[lexResponse.intentName] || this.plugins.lexVersionMismatch;
+    const plugin = this.plugins[lexResponse.intentName] || this.plugins.davisLexVersionMismatch;
     const slots = lexResponse.slots || {};
     if (!_.isEmpty(slots)) logger.debug(slots);
 
