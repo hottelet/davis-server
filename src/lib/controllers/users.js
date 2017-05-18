@@ -24,6 +24,10 @@ class Users {
     return UserModel.find({});
   }
 
+  static async getByEmail(email) {
+    return UserModel.findOne({ email });
+  }
+
   /**
    * Get a user by MongoID
    *
