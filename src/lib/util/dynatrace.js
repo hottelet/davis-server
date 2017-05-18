@@ -150,7 +150,7 @@ function problemStats(problems) {
   const topEventCount = eventCounts[topEvent];
 
   const topEntity = _.maxBy(_.keys(entityCounts), k => entityCounts[k]);
-  const topEntityName = _.find(roots, { entityId: topEntity }).entityName;
+  const topEntityName = _.get(_.find(roots, { entityId: topEntity }), "entityName");
   const topEntityCount = entityCounts[topEntity];
 
   const allImpacts = _.flatMap(problems, problem => problem.rankedImpacts);
