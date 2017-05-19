@@ -48,7 +48,21 @@ class DetailProblem extends Plugin {
       .hc(details.rankedEvents[last].eventType)
       .s("on").e(details.rankedEvents[last].entityId, details.rankedEvents[last].entityName);
 
-    const card = getSummary(req, details);
+    const card = cb(req.user)
+      .color(details.status)
+      .title(sb(req.user).hc(details.rankedEvents[last].eventType))
+      .url(Util.Linker.problem(req.user, id))
+      .field("Time Frame", sb(req.user).tr(details.startTime, details.endTime, true));
+
+    const stats = Util.Dynatrace.detailStats(details);
+
+    if (stats.affectedApplications.length > 0) {
+      const affectedAppField = sb(req.user);
+      stats.affectedApplications.forEach((app) => {
+        affectedAppField.e(app, stats.affectedEntities[app]).s("\n");
+      });
+      card.field("Affected Applications", affectedAppField);
+    }
 
     return {
       text,
