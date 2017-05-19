@@ -15,6 +15,7 @@ userRoute.route("/")
           last: req.user.lastName,
         },
         timezone: req.user.timezone,
+        voiceNavigation: req.user.voiceNavigation,
       },
     });
   })

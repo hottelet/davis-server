@@ -4,6 +4,7 @@ const Plugin = require("../../../core/plugin");
 const Dynatrace = require("../../../core/dynatrace");
 const Util = require("../../../util");
 const sb = require("../../../util/builder").sb;
+const support = require("./support");
 
 /**
  * Plugin to fall back on if Lex returns an intent that is not implemented
@@ -21,6 +22,7 @@ class ProblemCommentAdd extends Plugin {
   constructor() {
     super(...arguments);
     this.name = "davisProblemCommentAdd";
+    this.support = support;
   }
 
   /**

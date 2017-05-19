@@ -7,6 +7,7 @@ const DError = require("../../core/error");
 // routes
 const auth = require("./auth");
 const dynatrace = require("./dynatrace");
+const support = require("./support");
 const system = require("./system");
 const ask = require("./ask");
 const user = require("./user");
@@ -17,6 +18,7 @@ v1.use(auth);
 
 v1.use("/ask", ask);
 v1.use("/user", user);
+v1.use("/support", support);
 v1.use("/system", system);
 v1.use("/dynatrace", dynatrace);
 
