@@ -5,6 +5,7 @@ const natural = require("natural");
 
 const Aliases = require("../../controllers/aliases");
 const ProblemDetails = require("../../controllers/problemDetails");
+const Filters = require("../../controllers/filters");
 const logger = require("../logger");
 const DError = require("../../core/error");
 const Util = require("../../util");
@@ -49,22 +50,12 @@ class Dynatrace {
       await tenant.setActiveToken(apiToken);
       return response;
     } catch (err) {
-      if (err.statusCode === 400) {
-        if (_.has(err, "response.error.message")) {
-          throw new DError(`Unable to contact Dynatrace!  ${err.response.error.message}`);
-        }
-        throw new DError("Unable to contact Dynatrace!  Are you sure you set the correct URL?");
-      } else if (err.statusCode === 401) {
+      if (err.statusCode === 401) {
         if (apiTokens.length > 0) {
           return Dynatrace.get(user, endpoint, options, apiTokens);
         }
-        throw new DError("The configured Dynatrace API token is invalid!");
-      } else if (err.error && err.error.code === "ENOENT") {
-        throw new DError("Unable to contact Dynatrace!  Are you sure you have an active network connection?");
-      } else {
-        logger.error(`Dynatrace responded with an unhandled status code of ${err.statusCode}.`);
-        throw new DError("Unfortunately, there was an issue communicating with Dynatrace.");
       }
+      return formatDynatraceError(err);
     }
   }
 
@@ -91,22 +82,12 @@ class Dynatrace {
       await tenant.setActiveToken(apiToken);
       return response;
     } catch (err) {
-      if (err.statusCode === 400) {
-        if (_.has(err, "response.error.message")) {
-          throw new DError(`Unable to contact Dynatrace!  ${err.response.error.message}`);
-        }
-        throw new DError("Unable to contact Dynatrace!  Are you sure you set the correct URL?");
-      } else if (err.statusCode === 401) {
+      if (err.statusCode === 401) {
         if (apiTokens.length > 0) {
           return Dynatrace.post(user, endpoint, body, apiTokens);
         }
-        throw new DError("The configured Dynatrace API token is invalid!");
-      } else if (err.error && err.error.code === "ENOENT") {
-        throw new DError("Unable to contact Dynatrace!  Are you sure you have an active network connection?");
-      } else {
-        logger.error(`Dynatrace responded with an unhandled status code of ${err.statusCode}.`);
-        throw new DError("Unfortunately, there was an issue communicating with Dynatrace.");
       }
+      return formatDynatraceError(err);
     }
   }
 
@@ -382,6 +363,27 @@ class Dynatrace {
   static async addCommentToProblem(user, pid, comment) {
     return this.post(user, `problem/details/${pid}/comments`, { comment, user: user.identifier, context: "Davis Managed" });
   }
+
+  static async getFilteredProblems(req, options) {
+    const { user, scope } = req;
+    const problems = await Dynatrace.problemFeed(user, options);
+    const filteredProblems = [];
+    const filters = await Filters.getFiltersByScope(user, scope);
+    if (filters.length > 0) {
+      logger.debug(`Evaluating ${filters.length} filter(s).`);
+      req.filtered = true;
+      _.forEach(problems, (problem) => {
+        _.forEach(filters, (filter) => {
+          if (filter.shouldFilter(problem)) {
+            logger.debug(`The filter '${filter.name}' matched ${problem.id}.`);
+            filteredProblems.push(problem);
+          }
+        });
+      });
+    }
+    if (problems.length !== filteredProblems.length) logger.debug(`Filtered out ${problems.length - filteredProblems.length} problem(s).`);
+    return filteredProblems;
+  }
 }
 
 function logDynatraceTimes(body, response) {
@@ -395,6 +397,24 @@ function logDynatraceTimes(body, response) {
 
   logger.info(metadata, `DYNATRACE API: ${path} ${response.statusCode} - ${response.elapsedTime} ms`);
   return body;
+}
+
+function formatDynatraceError(err) {
+  if (err.statusCode === 400) {
+    if (_.has(err, "response.error.message")) {
+      throw new DError(`Unable to contact Dynatrace!  ${err.response.error.message}`);
+    }
+    throw new DError("Unable to contact Dynatrace!  Are you sure you set the correct URL?");
+  } else if (err.statusCode === 401) {
+    throw new DError("The configured Dynatrace API token is invalid!");
+  } else if (err.statusCode === 503 && err.message.includes("<title>Maintenance - Dynatrace</title>")) {
+    throw new DError("Your Dynatrace environment appears to be under maintenance.  Please try again in a few minutes.");
+  } else if (err.error && err.error.code === "ENOENT") {
+    throw new DError("Unable to contact Dynatrace!  Are you sure you have an active network connection?");
+  } else {
+    logger.error(`Dynatrace responded with an unhandled status code of ${err.statusCode}.`);
+    throw new DError("Unfortunately, there was an issue communicating with Dynatrace.");
+  }
 }
 
 module.exports = Dynatrace;
