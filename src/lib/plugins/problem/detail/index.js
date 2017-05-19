@@ -35,7 +35,7 @@ class DetailProblem extends Plugin {
       text,
       show: {
         text: "Below are the problem details you requested",
-        attachments: await Promise.all(cards.map(c => c.slack())),
+        attachments: cards,
       },
     };
   }
