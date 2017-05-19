@@ -8,16 +8,10 @@ const slotTypes = {
     tip: "Define aliases, as well as visual and audible versions of complex application names in the Dynatrace - Applications section within davis Settings.",
   },
   DATETIME: {
-    title: "Time",
+    title: "Time Frame",
     required: false,
     description: "description here",
     tip: "Specify AM/PM when filtering with an exact time",
-  },
-  CONFIRMATION: {
-    title: "Confirmation",
-    required: true,
-    description: "description here",
-    tip: "tip here",
   },
   NUMBER: {
     title: "Problem Number",
@@ -43,14 +37,6 @@ class Support {
         prevKey = key;
       }
     });
-
-    // for (var key in this.plugins) {
-    //   if (this.plugins[key].support && (!prevKey || !this.plugins[prevKey].support
-    //     || this.plugins[prevKey].support.name !== davis.plugins[key].support.name)) {
-    //       pluginsArray.push(davis.plugins[key].support);
-    //       prevKey = key;
-    //   }
-    // }
     return plugins;
   }
 }
