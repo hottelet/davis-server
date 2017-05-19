@@ -51,7 +51,7 @@ class UserActivityAppDate extends Plugin {
     const stats = Util.Dynatrace.userActivityStats(ts);
 
     return {
-      text: sb(req.user).date(date).c.e(stats.topApp, ts.entities[stats.topApp]).c
+      text: sb(req.user).date(date, true).c.e(stats.topApp, ts.entities[stats.topApp]).c
         .s("experienced an average of").s(stats.topAppMean).s("user actions per minute. The highest load was around")
         .ts(stats.topAppMax[0]).s("when a load of").s(stats.topAppMax[1]).s("user actions per minute was observed."),
     };

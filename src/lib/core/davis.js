@@ -1,9 +1,12 @@
 "use strict";
 
+const _ = require("lodash");
+
 const Contexts = require("../controllers/contexts");
 const Util = require("../util");
 const lex = require("./lex");
 const logger = require("./logger");
+const DError = require("./error");
 
 const plugins = require("../plugins");
 
@@ -13,6 +16,14 @@ const yes = /^(please |thanks|thank you)?(yes|yep|yea|yessir|sure|correct|absolu
 // eslint-disable-next-line
 const no = /^(please|thanks|thank you)? ?(no|nope|naw|no way|negative|absolutely not|nothing) ?(please|thanks|thank you)?$|^(please|thanks|thank you)? ?(none|neither)( of (them|those))? ?(please|thanks|thank you)?$|^(please|thanks|thank you)? ?(Im|I am) not interested in (either|any)( of (them|those))? ?(please|thanks|thank you)?$/i;
 
+// Maps Amazon intents to internal intent names
+const INTENT_MAPPING = {
+  "AMAZON.CancelIntent": "davisGeneralCancel",
+  "AMAZON.HelpIntent": "davisGeneralHelp",
+  "AMAZON.NextIntent": "davisPagerNext",
+  "AMAZON.PreviousIntent": "davisPagerPrevious",
+  "AMAZON.StopIntent": "davisGeneralStop",
+};
 class Davis {
   /**
    * Get singleton instance
@@ -86,6 +97,58 @@ class Davis {
     };
   }
 
+  async alexaAsk(user, req) {
+    const requestType = req.request.type;
+    const alexaResponse = { slots: {} };
+    if (requestType === "LaunchRequest") {
+      alexaResponse.intentName = "davisGeneralLaunch";
+    } else if (requestType === "IntentRequest") {
+      if (req.request.dialogState === "STARTED" || req.request.dialogState !== "COMPLETED") {
+        return {
+          version: "1.0",
+          sessionAttributes: {},
+          response: {
+            directives: [
+              { type: "Dialog.Delegate" },
+            ],
+          },
+        };
+      }
+      // All the required slots have been set
+      alexaResponse.intentName = INTENT_MAPPING[req.request.intent.name] ||
+        req.request.intent.name;
+      alexaResponse.slots = _.mapValues(req.request.intent.slots, v => v.value);
+    } else if (requestType === "SessionEndedRequest") {
+      const reasonForError = _.get(req, "request.reason", "of an unknown reason");
+      if (reasonForError === "EXCEEDED_MAX_REPROMPTS") {
+        // Simulates a stop intent if the user simply doesn't respond to Alexa
+        alexaResponse.intentName = "davisGeneralStop";
+      } else {
+        throw new DError(`The session is ending because ${reasonForError}.`);
+      }
+    } else {
+      throw new DError(`Received an unknown request type ${requestType}!`);
+    }
+
+    const meta = {
+      scope: `${user.tenant}:alexa:${req.session.user.userId}:${_.get(req, "context.System.device.deviceId")}`,
+      user,
+    };
+    const response = await this.fulfill(alexaResponse, meta);
+
+    return {
+      version: 1.0,
+      sessionAttributes: {},
+      response: {
+        shouldEndSession: response.stop,
+        outputSpeech: {
+          type: "SSML",
+          ssml: `<speak>${response.say || response.text}</speak>`,
+        },
+      },
+    };
+  }
+
   /**
    * Fill in the missing pieces of {say, show, text}
    *
@@ -95,13 +158,17 @@ class Davis {
    * @memberOf Davis
    */
   async formatResponse(res) {
-    const out = { text: res.text };
+    const out = { text: res.text, stop: Boolean(res.stop) };
     out.say = res.say || res.text;
     out.show = res.show || { text: res.text };
 
     out.text = (typeof out.text === "string") ? out.text : await out.text.toString();
     out.say = (typeof out.say === "string") ? out.say : await out.say.audible();
     out.show.text = (typeof out.show.text === "string") ? out.show.text : await out.show.text.slack();
+    if (out.show.attachments) {
+      out.show.attachments = await Promise.all(out.show.attachments.map(async att =>
+        (typeof att.slack === "function") ? att.slack() : att));
+    }
     return out;
   }
 
@@ -116,9 +183,9 @@ class Davis {
    */
   async fulfill(lexResponse, req) {
     logger.debug(`Lex found ${lexResponse.intentName}`);
-    const plugin = this.plugins[lexResponse.intentName] || this.plugins.lexVersionMismatch;
+    const plugin = this.plugins[lexResponse.intentName] || this.plugins.davisLexVersionMismatch;
     const slots = lexResponse.slots || {};
-    logger.debug(slots);
+    if (!_.isEmpty(slots)) logger.debug(slots);
 
     if (!plugin) {
       return { text: "That plugin does not exist in Davis right now" };

@@ -2,6 +2,7 @@
 
 const Plugin = require("../../../core/plugin");
 const Dynatrace = require("../../../core/dynatrace");
+const Util = require("../../../util");
 const sb = require("../../../util/builder").sb;
 
 /**
@@ -46,7 +47,7 @@ class ProblemCommentAdd extends Plugin {
     await Dynatrace.addCommentToProblem(req.user, pid, comment);
 
     return {
-      text: sb(req.user).s("Added your comment: ").s(comment).p,
+      text: sb(req.user).link(Util.Linker.problem(req.user, pid), "Added your comment:").s(comment).p,
     };
   }
 }

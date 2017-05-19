@@ -10,6 +10,7 @@ const TimeStamp = require("./time-stamp");
 const Link = require("./link");
 const _ = require("lodash");
 const string = require("string");
+const events = require("./events");
 
 /**
  * String Builder
@@ -126,25 +127,31 @@ class StringBuilder {
    * @param {IBuildable} singular
    * @param {IBuildable} plural
    * @param {number | boolean | any[]} count
+   * @param {boolean} capitalize
    * @returns {StringBuilder} this
    *
    * @memberOf StringBuilder
    */
-  s(singular, plural, count) {
+  s(singular, plural, count, capitalize) {
     if (singular && singular.constructor && singular.constructor === Array) {
-      this.state.push(_.sample(singular));
-      return this;
+      return this.s(_.sample(singular), null, null, capitalize);
     }
     if (typeof count === "number") {
-      return (count === 1) ? this.s(singular) : this.s(plural);
+      return (count === 1) ?
+        this.s(singular, null, null, capitalize) :
+        this.s(plural, null, null, capitalize);
     }
     if (count && count.constructor === Array) {
-      return this.s(singular, plural, count.length);
+      return this.s(singular, plural, count.length, capitalize);
     }
     if (typeof count === "boolean") {
       if (!count) {
-        return this.s(plural);
+        return this.s(plural, null, null, capitalize);
       }
+    }
+    if (typeof singular === "string" && capitalize) {
+      const capped = singular.charAt(0).toUpperCase() + singular.slice(1);
+      return this.s(capped);
     }
     this.state.push(singular);
     return this;
@@ -177,7 +184,11 @@ class StringBuilder {
    * @memberOf StringBuilder
    */
   h(item) {
-    return this.s(string(item).humanize().s.toLowerCase());
+    const event = _.find(events, { name: item });
+    if (event) {
+      return this.s(_.sample(event.friendly));
+    }
+    return this.s(helpers.fixCaps(string(item).humanize().s.toLowerCase()));
   }
 
   /**
@@ -201,6 +212,10 @@ class StringBuilder {
    * @memberof StringBuilder
    */
   hc(item) {
+    const event = _.find(events, { name: item });
+    if (event) {
+      return this.s(helpers.fixCaps(string(_.sample(event.friendly)).titleCase().s));
+    }
     return this.s(helpers.fixCaps(string(item).humanize().titleCase().s));
   }
 
@@ -231,28 +246,28 @@ class StringBuilder {
     return this.d(range);
   }
 
-  date(date) {
+  date(date, capitalize) {
     const { startTime, endTime, grain } = Util.Date.dateParser(date, this.user);
     const thisWeek = moment.tz(this.user.timezone).isoWeek();
     if (grain === "week") {
       if (thisWeek === moment.tz(startTime, this.user.timezone).isoWeek()) {
-        this.s("This week");
+        this.s("this week", null, null, capitalize);
       } else if (thisWeek === moment.tz(startTime, this.user.timezone).add(1, "week").isoWeek()) {
-        this.s("Last week");
+        this.s("last week", null, null, capitalize);
       } else if (thisWeek === moment.tz(startTime, this.user.timezone).subtract(1, "week").isoWeek()) {
-        this.s("Next week");
+        this.s("next week", null, null, capitalize);
       } else {
         this.ts(startTime, endTime);
       }
     } else if (grain === "day") {
       this.s(moment.tz(startTime, this.user.timezone).calendar(null, {
-        sameDay: "[Today]",
-        nextDay: "[Tomorrow]",
-        nextWeek: "[Next] dddd",
-        lastDay: "[Yesterday]",
-        lastWeek: "On dddd",
+        sameDay: "[today]",
+        nextDay: "[tomorrow]",
+        nextWeek: "[next] dddd",
+        lastDay: "[yesterday]",
+        lastWeek: "on dddd",
         sameElse: "DD/MM/YYYY",
-      }));
+      }), null, null, capitalize);
     } else {
       this.ts(startTime, endTime);
     }

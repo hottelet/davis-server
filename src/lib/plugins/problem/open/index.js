@@ -53,6 +53,10 @@ async function oneProblem(req, problem) {
       text: "There is currently only one open problem.",
       attachments: detail.attachments,
     },
+    paging: {
+      items: [{ id: problem.id, source: "davisProblemDetail", target: "davisProblemDetail" }],
+      active: 0,
+    },
   };
 }
 

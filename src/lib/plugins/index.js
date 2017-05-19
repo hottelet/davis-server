@@ -9,16 +9,21 @@ module.exports = [
   require("./problem/detail"),
   require("./problem/comment/add"),
 
+  require("./problem/relTime"),
+  require("./problem/appRelTime"),
+
   require("./userActivity/app"),
   require("./userActivity/general"),
 
   require("./userActivity/appDate"),
   require("./userActivity/appDow"),
   require("./userActivity/appRange"),
+  require("./userActivity/appRelTime"),
 
   require("./userActivity/date"),
   require("./userActivity/dow"),
   require("./userActivity/range"),
+  require("./userActivity/relTime"),
 
   require("./choice/numeric/first"),
   require("./choice/numeric/second"),
@@ -38,6 +43,19 @@ module.exports = [
   require("./general/stop"),
 
   require("./tenant/active"),
+
+  require("./topRoots/general"),
+  require("./topRoots/date"),
+  require("./topRoots/dow"),
+  require("./topRoots/range"),
+  require("./topRoots/relTime"),
+
+
+  require("./topRoots/app"),
+  require("./topRoots/appDate"),
+  require("./topRoots/appDow"),
+  require("./topRoots/appRange"),
+  require("./topRoots/appRelTime"),
 
   require("./lexVersionMismatch"),
 ];
