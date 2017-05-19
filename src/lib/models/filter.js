@@ -52,13 +52,13 @@ class FilterClass {
    *
    * @memberof FilterClass
    */
-  problemMatch(problem) {
+  shouldIncludeProblem(problem) {
     if (this.status.length > 0 && this.status.indexOf(problem.status) === -1) return false;
 
     if (this.impact.length > 0 && this.impact.indexOf(problem.impactLevel) === -1) return false;
 
     if (problem.severityLevel && this.severityLevel.length > 0) {
-      if (this.impact.indexOf(problem.severityLevel) === -1) return false;
+      if (this.severityLevel.indexOf(problem.severityLevel) === -1) return false;
     }
 
     if (problem.tagsOfAffectedEntities
@@ -74,9 +74,9 @@ class FilterClass {
       // rankedImpacts = problem feed, rankedEvents = problem details
       const events = problem.rankedImpacts || problem.rankedEvents;
       let hasMatchingEntityID = false;
-      for (const event of events) { // eslint-disable-line no-restricted-syntax
+      for (const event of events) { // eslint-disable-line
         if (this.entity.length > 0) {
-          if (!hasMatchingEntityID && _.find(this.entity, { entityId: event.entityId })) {
+          if (!hasMatchingEntityID && this.entity.indexOf(event.entityId) !== -1) {
             hasMatchingEntityID = true;
           }
         }

@@ -374,7 +374,7 @@ class Dynatrace {
       req.filtered = true;
       _.forEach(problems, (problem) => {
         _.forEach(filters, (filter) => {
-          if (filter.shouldFilter(problem)) {
+          if (filter.shouldIncludeProblem(problem)) {
             logger.debug(`The filter '${filter.name}' matched ${problem.id}.`);
             filteredProblems.push(problem);
           }
