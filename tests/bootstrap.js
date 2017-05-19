@@ -45,7 +45,7 @@ const createTenant = async (user) => {
   return TenantController.create(user, tenantSpec);
 }
 
-const createUserWithTenant= async () => {
+const createUserWithTenant = async () => {
   const newUser = await createUser();
   const tenant = await createTenant(newUser);
   const user = await UserController.getById(newUser._id);
@@ -55,10 +55,20 @@ const createUserWithTenant= async () => {
   }
 }
 
+const createMockRequest = async () => {
+  const { user, tenant } = await createUserWithTenant();
+  const req = {
+    user,
+    scope: `${tenant._id}:test`,
+  };
+  return req;
+}
+
 module.exports = {
   createUser,
   createTenant,
   createUserWithTenant,
+  createMockRequest,
   tenantSpec,
   userSpec,
   appAliasSpec,
