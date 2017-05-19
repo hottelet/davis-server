@@ -202,8 +202,10 @@ function summarize(user, problems, app = false, present = false) {
     const mostAffected = _.maxBy(Object.keys(appCounts), eid => appCounts[eid]);
     const mostAffectedCount = _.filter(problems, problem =>
       _.filter(problem.rankedImpacts, { entityId: mostAffected }).length).length;
-    out.s("The most affected application").s("is", "was", present).e(mostAffected, stats.affectedEntities[mostAffected])
-      .c.s("which is being affected by", "which was affected by", present).s(mostAffectedCount).s("issue.", "issues.", mostAffectedCount);
+    if (mostAffected) {
+      out.s("The most affected application").s("is", "was", present).e(mostAffected, stats.affectedEntities[mostAffected])
+            .c.s("which is being affected by", "which was affected by", present).s(mostAffectedCount).s("issue.", "issues.", mostAffectedCount);
+    }
   }
 
   // Which entity caused the most roots?
