@@ -45,11 +45,14 @@ class DetailProblem extends Plugin {
 
     const last = details.rankedEvents.length - 1;
     const text = sb(req.user)
-      .h(details.rankedEvents[last].eventType)
+      .hc(details.rankedEvents[last].eventType)
       .s("on").e(details.rankedEvents[last].entityId, details.rankedEvents[last].entityName);
+
+    const card = getSummary(req, details);
 
     return {
       text,
+      card,
       value: details,
     };
   }
