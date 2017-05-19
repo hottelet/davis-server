@@ -17,10 +17,10 @@ class Filters {
 
   static async update(user, id, filter) {
     const f = await FilterModel.findById(id);
-    if (!filter) {
+    if (!f) {
       logger.info({ user }, `Unable to find a filter with the ID ${id}.`);
       throw new DError("Unable to find a filter with that ID!", 400);
-    } else if (!filter.owner.equals(user._id)) {
+    } else if (!f.owner.equals(user._id)) {
       logger.warn({ user }, "Rejecting unauthorized filter deletions.");
       throw new DError("Only the owner of the filter can update it.", 403);
     }
@@ -29,17 +29,21 @@ class Filters {
   }
 
   static async delete(user, id) {
-    const filter = FilterModel.findById(id);
+    const f = await FilterModel.findById(id);
 
-    if (!filter) {
+    if (!f) {
       logger.info({ user }, `Unable to find a filter with the ID ${id}.`);
       throw new DError("Unable to find a filter with that ID!", 400);
-    } else if (!filter.owner.equals(user._id)) {
+    } else if (!f.owner.equals(user._id)) {
       logger.warn({ user }, "Rejecting unauthorized filter deletions.");
       throw new DError("Only the owner of the filter can delete it.", 403);
     }
 
     return FilterModel.remove(id);
+  }
+
+  static async getFilter(user, id) {
+    return FilterModel.find({ _id: id, tenant: user.tenant._id })
   }
 
   static async getFilters(user) {
