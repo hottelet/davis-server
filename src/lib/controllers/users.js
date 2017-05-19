@@ -1,4 +1,6 @@
 const bcrypt = require("bcrypt");
+const _ = require("lodash");
+
 const UserModel = require("../models/user");
 
 const DError = require("../core/error");
@@ -107,6 +109,13 @@ class Users {
     }
     return null;
   }
+
+  static async update(id, user) {
+    const u = await UserModel.findById(id);
+    _.assign(u, user);
+    return u.save();
+  }
+
 }
 
 module.exports = Users;
