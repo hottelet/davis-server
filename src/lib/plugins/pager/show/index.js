@@ -42,7 +42,7 @@ class ShowPage extends Plugin {
     const text = sb(req.user)
       .s("This is").s(item.text).p.s("Would you like to hear more details?");
 
-    return {
+    const out = {
       text,
       targets: {
         yes: {
@@ -51,15 +51,40 @@ class ShowPage extends Plugin {
         },
       },
     };
+
+    if (item.card) {
+      out.show = {
+        text: "Would you like more details?",
+        attachments: [item.card],
+      };
+    }
+
+    return out;
   }
 
   async twoItems(req, page) {
+    const attachments = [];
     const items = await Promise.all(page.map(i =>
       this.davis.plugins[i.source].listItem(req, i.id)));
-    return {
+    items.forEach((i) => {
+      if (i.card) {
+        attachments.push(i.card);
+      }
+    });
+
+    const out = {
       text: sb(req.user).s("There was").s(items[0].text).s("and").s(items[1].text).p
         .s("Would you like to know more about the first, or second one?"),
     };
+
+    if (attachments.length === 2) {
+      out.show = {
+        text: "Here are your choices. Would you like to know more about the first or second one?",
+        attachments,
+      };
+    }
+
+    return out;
   }
 
   async threeItems(req, page) {
