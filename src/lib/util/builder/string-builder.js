@@ -246,29 +246,28 @@ class StringBuilder {
     return this.d(range);
   }
 
-  date(date) {
-    console.log("hey");
+  date(date, capitalize) {
     const { startTime, endTime, grain } = Util.Date.dateParser(date, this.user);
     const thisWeek = moment.tz(this.user.timezone).isoWeek();
     if (grain === "week") {
       if (thisWeek === moment.tz(startTime, this.user.timezone).isoWeek()) {
-        this.s("This week");
+        this.s("this week", null, null, capitalize);
       } else if (thisWeek === moment.tz(startTime, this.user.timezone).add(1, "week").isoWeek()) {
-        this.s("Last week");
+        this.s("last week", null, null, capitalize);
       } else if (thisWeek === moment.tz(startTime, this.user.timezone).subtract(1, "week").isoWeek()) {
-        this.s("Next week");
+        this.s("next week", null, null, capitalize);
       } else {
         this.ts(startTime, endTime);
       }
     } else if (grain === "day") {
       this.s(moment.tz(startTime, this.user.timezone).calendar(null, {
-        sameDay: "[Today]",
-        nextDay: "[Tomorrow]",
-        nextWeek: "[Next] dddd",
-        lastDay: "[Yesterday]",
-        lastWeek: "On dddd",
+        sameDay: "[today]",
+        nextDay: "[tomorrow]",
+        nextWeek: "[next] dddd",
+        lastDay: "[yesterday]",
+        lastWeek: "on dddd",
         sameElse: "DD/MM/YYYY",
-      }));
+      }), null, null, capitalize);
     } else {
       this.ts(startTime, endTime);
     }

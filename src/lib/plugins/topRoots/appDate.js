@@ -66,7 +66,7 @@ class TopRootsAppDate extends Plugin {
 
     return {
       text: sb(req.user)
-        .date(req.slots.date).s("there were").s(roots.length)
+        .date(req.slots.date, true).s("there were").s(roots.length)
         .s("problems with detected root causes which affected").e(app.entityId, app.name).p
         .s("The most common root cause was").h(topEvent).c.s("which caused").s(topEventCount)
         .s("issues.").s("The entity that caused the most problems was").e(topEntity, topEntityName)
