@@ -21,7 +21,7 @@ class Previous extends Plugin {
   async previousPage(req) {
     const paging = req.context.paging;
     if (paging.page === 0) {
-      return { text: "You are already on the first page" };
+      return { text: "You are already on the first page." };
     }
     req.context.set("paging.page", paging.page - 1);
     return this.davis.plugins.davisPagerShow.run(req);
@@ -33,7 +33,7 @@ class Previous extends Plugin {
     const next = active - 1;
 
     if (active === 0) {
-      return { text: "You are already on the first item" };
+      return { text: "You are already on the first item." };
     }
     req.context.set("paging.active", next);
     const item = paging.items[next];
