@@ -67,7 +67,7 @@ describe("Dynatrace", () => {
 
     expect(computed.firstProblem.id).to.equal('3568522684534171853');
     expect(computed.lastProblem.id).to.equal('-3839772707633434931');
-    expect(computed.openProblems.length).to.equal(0);
+    expect(computed.openProblems.length).to.equal(1);
   });
 
   it("should summarize a list of problems", async () => {

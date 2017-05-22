@@ -36,7 +36,7 @@ tenantRoute.route("/tenant")
 tenantRoute.get("/tenants", async (req, res, next) => {
   try {
     const tenants = await TenantController.getAll(req.user);
-    const active = _.findIndex(tenants, t => t._id.toString() === req.user.tenant._id.toString());
+    const active = _.findIndex(tenants, t => t._id.equals(req.user.tenant._id));
     return res.json({ success: true, active, tenants });
   } catch (err) {
     return next(err);

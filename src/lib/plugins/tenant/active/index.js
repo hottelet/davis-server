@@ -4,11 +4,13 @@ const Plugin = require("../../../core/plugin");
 const TenantController = require("../../../controllers/tenants");
 
 const { sb } = require("../../../util/builder");
+const support = require("./support");
 
 class Active extends Plugin {
   constructor() {
     super(...arguments);
     this.name = "davisTenantActive";
+    this.support = support;
   }
 
   async ask(req) {

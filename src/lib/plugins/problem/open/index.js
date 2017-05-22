@@ -4,6 +4,7 @@ const Dynatrace = require("../../../core/dynatrace");
 const Plugin = require("../../../core/plugin");
 const sb = require("../../../util/builder").sb;
 const Util = require("../../../util");
+const support = require("./support");
 
 /**
  * Plugin for asking about open issues
@@ -21,6 +22,7 @@ class OpenProblem extends Plugin {
   constructor() {
     super(...arguments);
     this.name = "davisProblemOpen";
+    this.support = support;
   }
 
   /**

@@ -4,11 +4,13 @@ const Plugin = require("../../../core/plugin");
 const Dynatrace = require("../../../core/dynatrace");
 const sb = require("../../../util/builder").sb;
 const Util = require("../../../util");
+const support = require("./support");
 
 class DateProblem extends Plugin {
   constructor() {
     super(...arguments);
     this.name = "davisProblemDate";
+    this.support = support;
   }
 
   parseSlots(user, slots, raw) {

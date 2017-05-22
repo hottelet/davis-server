@@ -88,9 +88,9 @@ class Tenants {
     const tenant = await TenantModel.findById(id);
 
     return (!tenant) ? null
-      : (tenant.owner.toString() !== user._id.toString()) ? "owner"
-      : (_.filter(tenant.admins.map(a => a.toString() === user._id.toString())).length === 0) ? "admin"
-      : (_.filter(tenant.users.map(u => u.toString() === user._id.toString())).length === 0) ? "user"
+      : (!tenant.owner.equals(user._id)) ? "owner"
+      : (_.filter(tenant.admins.map(a => a.equals(user._id))).length === 0) ? "admin"
+      : (_.filter(tenant.users.map(u => u.equals(user._id))).length === 0) ? "user"
       : null;
   }
 

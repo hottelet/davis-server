@@ -2938,10 +2938,10 @@ module.exports.problems = [
   {
     id: "873979908602915192",
     startTime: 1492697509959,
-    endTime: 1492700496072,
+    endTime: -1,
     displayName: "192",
     impactLevel: "APPLICATION",
-    status: "CLOSED",
+    status: "OPEN",
     rankedImpacts: [
       {
         entityId: "SYNTHETIC_TEST-0000000000004C40",
