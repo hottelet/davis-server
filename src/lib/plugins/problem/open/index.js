@@ -64,7 +64,7 @@ async function manyProblems(req, problems) {
   return {
     text: sb(req.user)
       .s("There are currently").s(problems.length).s("open problems.")
-      .s(Util.Dynatrace.summarize(req.user, problems))
+      .s(Util.Dynatrace.summarize(req.user, problems, false, true))
       .s("Would you like to see a listing of these issues?"),
     targets: {
       yes: {
