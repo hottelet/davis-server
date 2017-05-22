@@ -3,7 +3,7 @@ const moment = require("moment");
 const { sb } = require("./builder");
 
 /**
- * Compute stats on a problem detail reponse
+ * Compute stats on a problem detail response
  *
  * @param {IProblemDetail} detail
  * @returns
@@ -222,7 +222,7 @@ function summarize(user, problems, app = false, present = false) {
 
   // Were the problems concentrated in a particular hour?
   if (Object.keys(stats.hourly).length === 1) {
-    out.s("These issues all occurred at around the same time");
+    out.s("These issues all occurred at around the same time.");
   } else {
     const topHour = _.maxBy(Object.keys(stats.hourly), hour => stats.hourly[hour].length);
     const topHourCount = stats.hourly[topHour].length;
