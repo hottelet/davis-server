@@ -27,9 +27,9 @@ class ShowPage extends Plugin {
 
     const currentPage = paging.items.slice(first, first + 3);
     const ret = await ((currentPage.length === 0) ? { text: sb(req.user).s("Oh no! It appears that the pager had an error") } :
-      (currentPage.length === 1) ? this.oneItem(req, currentPage) :
-      (currentPage.length === 2) ? this.twoItems(req, currentPage) :
-      this.threeItems(req, currentPage));
+      (currentPage.length === 1) ? this.oneItem(req, currentPage, paging.page + 1, numPages) :
+      (currentPage.length === 2) ? this.twoItems(req, currentPage, paging.page + 1, numPages) :
+      this.threeItems(req, currentPage, paging.page + 1, numPages));
 
     if (paging.page + 1 < numPages) {
       ret.text.s("You can also say next page.");
@@ -37,7 +37,7 @@ class ShowPage extends Plugin {
     return ret;
   }
 
-  async oneItem(req, page) {
+  async oneItem(req, page, num, total) {
     const item = await this.davis.plugins[page[0].source].listItem(req, page[0].id);
     const text = sb(req.user)
       .s("This is").s(item.text).p.s("Would you like to hear more details?");
@@ -52,17 +52,18 @@ class ShowPage extends Plugin {
       },
     };
 
+    const lead = { text: "Would you like to know more details?", footer: `Page ${num} of ${total}` };
+
     if (item.card) {
       out.show = {
-        text: "Would you like more details?",
-        attachments: [item.card],
+        attachments: [lead, item.card],
       };
     }
 
     return out;
   }
 
-  async twoItems(req, page) {
+  async twoItems(req, page, num, total) {
     const attachments = [];
     const items = await Promise.all(page.map(i =>
       this.davis.plugins[i.source].listItem(req, i.id)));
@@ -78,8 +79,12 @@ class ShowPage extends Plugin {
     };
 
     if (attachments.length === 2) {
-      out.show = {
+      const lead = {
         text: "Here are your choices. Would you like to know more about the first or second one?",
+        footer: `Page ${num} of ${total}`,
+      };
+      attachments.unshift(lead);
+      out.show = {
         attachments,
       };
     }
@@ -87,7 +92,7 @@ class ShowPage extends Plugin {
     return out;
   }
 
-  async threeItems(req, page) {
+  async threeItems(req, page, num, total) {
     const attachments = [];
     const items = await Promise.all(page.map(i =>
       this.davis.plugins[i.source].listItem(req, i.id)));
@@ -104,8 +109,12 @@ class ShowPage extends Plugin {
     };
 
     if (attachments.length === 3) {
-      out.show = {
+      const lead = {
         text: "Here are your three choices. Would you like to know more about the first, second, or third one?",
+        footer: `Page ${num} of ${total}`,
+      };
+      attachments.unshift(lead);
+      out.show = {
         attachments,
       };
     }
