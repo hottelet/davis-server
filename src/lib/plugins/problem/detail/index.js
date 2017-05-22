@@ -56,6 +56,10 @@ class DetailProblem extends Plugin {
       .url(Util.Linker.problem(req.user, id))
       .field("Time Frame", sb(req.user).tr(details.startTime, details.endTime, true));
 
+    if (details.rankedEvents[0].isRootCause) {
+      card.title("[ROOT CAUSE]");
+    }
+
     const stats = Util.Dynatrace.detailStats(details);
 
     if (stats.affectedApplications.length > 0) {

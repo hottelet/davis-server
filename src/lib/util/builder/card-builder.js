@@ -29,6 +29,7 @@ class CardBuilder {
     this.titleText = new StringBuilder(user);
     this.footer = new StringBuilder(user);
     this.pretext = new StringBuilder(user);
+    this.author = new StringBuilder(user);
   }
 
   /**
@@ -296,16 +297,17 @@ class CardBuilder {
    * @memberOf CardBuilder
    */
   async slack() {
-    const [fallback, footer, pretext, text, title, fields] = await Promise.all([
+    const [fallback, footer, pretext, authorName, text, title, fields] = await Promise.all([
       this.fallback.toString(),
       this.footer.slack(),
       this.pretext.slack(),
+      this.author.slack(),
       this.text.slack(),
       this.titleText.slack(),
       await Promise.all(this.fields.map(f => f.slack())),
     ]);
 
-    const out = { fallback, footer, pretext, text, title, fields };
+    const out = { fallback, footer, pretext, author_name: authorName, text, title, fields };
     out.color = this.colorCode;
     out.title_link = this.titleLink;
 

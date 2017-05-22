@@ -164,7 +164,9 @@ class Davis {
 
     out.text = (typeof out.text === "string") ? out.text : await out.text.toString();
     out.say = (typeof out.say === "string") ? out.say : await out.say.audible();
-    out.show.text = (typeof out.show.text === "string") ? out.show.text : await out.show.text.slack();
+    if (out.show.text) {
+      out.show.text = (typeof out.show.text === "string") ? out.show.text : await out.show.text.slack();
+    }
     if (out.show.attachments) {
       out.show.attachments = await Promise.all(out.show.attachments.map(async att =>
         (typeof att.slack === "function") ? att.slack() : att));
