@@ -1,3 +1,8 @@
+<a name="0.19.1"></a>
+## [0.19.1](https://github.com/Dynatrace/davis-server/compare/v0.19.0...v0.19.1) (2017-07-10)
+
+
+
 <a name="0.19.0"></a>
 # [0.19.0](https://github.com/Dynatrace/davis-server/compare/v0.18.0...v0.19.0) (2017-06-22)
 
