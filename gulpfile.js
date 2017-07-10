@@ -218,7 +218,7 @@ gulp.task('release-dev-patch', (cb) => {
     'npminstall',
     'npmupdate',
     'test',
-    'bump-version',
+    'patch-version',
     'changelog',
     'commit',
     'push',
